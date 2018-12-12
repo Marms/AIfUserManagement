@@ -1,93 +1,10 @@
 <!--The content below is only a placeholder and can be replaced.-->
+<app-header></app-header>
 
 <div class="container">
-  <div style="text-align:center"><hr/>
+  <div style="text-align:center">
     <div class="container">
-      <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
-        <div class="form-row">
-          <div class="form-group col-md-6">
-            <label class="form-label" for="owner">Owners</label>
-            <select class="form-control" id="owner" (change)="ownerSelected($event.target.value)">
-              <option *ngIf="!disableOwnerOption" selected value="">Please select</option>
-              <option *ngFor="let owner of owners" (value)="owner">{{owner}}</option>
-            </select>
-          </div>
-          <div class="form-group col-md-6">
-            <label for="repo">Repo</label>
-            <select class="form-control" id="repo" (change)="repoSelected($event.target.value)">
-              <option *ngIf="!disableRepoOption" selected value="">Please select</option>
-              <option *ngFor="let repo of repos" (value)="repo">{{repo}}</option>
-            </select>
-          </div>
-        </div>
-        <div>
-          <div formGroupName="step">
-            <div formGroupName="siteServers">
-              <div class="form-group">
-                <div class="form-row">
-                  <label class="control-label" for="site">site</label>
-                  <select formControlName="site" (change)="siteSelected()"
-                          id="site" class="form-control"
-                  >
-                    <option *ngIf="!disableSiteOption" selected value="">Please select</option>
-                    <option *ngFor="let site of sites" (value)="site"> {{site}}</option>
-                  </select>
-
-                </div>
-              </div>
-            </div>
-            <div formGroupName="user">
-              <div class="form-group">
-                <div class="form-row">
-                  <label class="control-label" for="username">Username</label>
-                  <input type="text" formControlName="username"
-                         id="username"
-                         class="form-control"
-                  >
-                </div>
-              </div>
-              <div class="form-group">
-                <div class="form-row">
-                  <label class="-label" for="password">password</label>
-                  <input type="password" formControlName="password"
-                         id="password"
-                         class="form-control"
-                  >
-                </div>
-              </div>
-              <div class="form-row-align-center">
-                <button [disabled]="!userForm.valid" type="submit" class="btn btn-primary">Create User</button>
-                <span> </span>
-                <button [disabled]="!userForm.valid" class="btn btn-success" type="button" (click)="addGroup()">Add
-                  group
-                </button>
-              </div>
-
-              <div class="form-row" *ngIf="showGroupHeader">
-                <div class="form-group col-md-10">
-                  <label class="control-label">Groups</label>
-                </div>
-                <div class="form-group col-md-2">
-                  <label class="control-label">Action</label>
-
-                </div>
-              </div>
-              <div class="form-row" formArrayName="groups" formArrayName="groups"
-                   *ngFor="let item of getGroups(); let i = index">
-                <div class="form-group col-md-10" id="groups">
-                  <input type="text"
-                         class="form-control"
-                         [formControlName]="i"
-                  ></div>
-                <div class="form-group col-md-2">
-                  <button class="btn btn-warning" type="button" (click)="deleteGroup(i)">Delete</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
-
+      <router-outlet></router-outlet>
     </div>
 
   </div>

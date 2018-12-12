@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
-import {UserSvcService} from './user-svc.service';
-import {AifMcSvcService} from './aif-mc-svc.service';
+import {UserSvcService} from './services/user-svc.service';
+import {AifMcSvcService} from './services/aif-mc-svc.service';
 import {AbstractControl} from '@angular/forms/src/model';
 
 @Component({

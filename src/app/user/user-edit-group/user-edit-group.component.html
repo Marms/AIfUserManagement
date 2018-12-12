@@ -1,0 +1,61 @@
+<form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+  <div>
+    <div formGroupName="step">
+      <div formGroupName="alias">
+       <app-aifmc-header></app-aifmc-header>
+        <!-- <div class="form-group">
+          <div class="form-row">
+            <label class="control-label" for="site">site</label>
+            <select formControlName="site" (change)="siteSelected()"
+                    id="site" class="form-control"
+            >
+              <option *ngIf="!disableSiteOption" selected value="">Please select</option>
+              <option *ngFor="let site of sites" (value)="site"> {{site}}</option>
+            </select>
+
+          </div>
+        </div> -->
+      </div>
+      <div formGroupName="user">
+        <div class="form-group">
+          <div class="form-row">
+            <label class="control-label" for="username">Username</label>
+            <select class="form-control" id="username" formControlName="username" (change)="userSelected($event.target.value)">
+               <option *ngIf="!disableUserOption" selected value="">Please select</option>
+              <option *ngFor="let user of users" (value)="user.name">{{user.name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row-align-center">
+          <button [disabled]="!userForm.valid" type="submit" class="btn btn-primary">Create User</button>
+          <span> </span>
+          <button [disabled]="!userForm.valid" class="btn btn-success" type="button" (click)="addGroup()">Add
+            group
+          </button>
+        </div>
+
+        <div class="form-row" *ngIf="showGroupHeader">
+          <div class="form-group col-md-10">
+            <label class="control-label">Groups</label>
+          </div>
+          <div class="form-group col-md-2">
+            <label class="control-label">Action</label>
+
+          </div>
+        </div>
+        <div class="form-row" formArrayName="groups" formArrayName="groups"
+             *ngFor="let item of getGroups(); let i = index">
+          <div class="form-group col-md-10" id="groups">
+            <input type="text"
+                   class="form-control"
+                   [formControlName]="i"
+            ></div>
+          <div class="form-group col-md-2">
+            <button class="btn btn-warning" type="button" (click)="deleteGroup(i)">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+

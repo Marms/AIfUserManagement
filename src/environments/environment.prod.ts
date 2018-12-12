@@ -1,3 +1,6 @@
 export const environment = {
-  production: true
+  production: true,
+  aifmcUrl: window.location.origin,
+  afsUserManagerUrl: window.location.origin
+
 };

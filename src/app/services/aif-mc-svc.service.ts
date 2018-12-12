@@ -1,6 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Http, Headers, Response} from '@angular/http';
 import 'rxjs/Rx';
+import {environment} from '../../environments/environment';
+import {Subject} from 'rxjs/Subject';
 
 @Injectable({
   providedIn: 'root'
@@ -8,8 +10,12 @@ import 'rxjs/Rx';
 export class AifMcSvcService {
   url: string;
 
+  ownerSubject: Subject<string> = new Subject<string>();
+  repoSubject: Subject<string> = new Subject<string>();
+  siteSubject: Subject<string> = new Subject<string>();
+
   constructor(private http: Http) {
-    this.url = window.location.origin + '/rest/aifra/api/v1/';
+    this.url = environment.aifmcUrl  + '/rest/aifra/api/v1/';
   }
 
   getToken() {
@@ -23,7 +29,6 @@ export class AifMcSvcService {
   }
 
   getOwners() {
-
     return this.http.get(this.url + 'owners', {headers: this.getToken()})
       .map((response: Response) => {
         return response.json();
