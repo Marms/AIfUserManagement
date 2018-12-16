@@ -1,9 +1,9 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Form, FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
-import {UserSvcService} from '../../services/user-svc.service';
+import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+import {UserManagementService} from '../../services/user-management.service';
 import {AbstractControl} from '@angular/forms/src/model';
-import {AifMcSvcService} from '../../services/aif-mc-svc.service';
-import {UserList} from '../../services/userList';
+import {AifmcService} from '../../services/aifmc.service';
+import {UserList} from '../../services/shared/userList';
 import {Subscription} from 'rxjs';
 
 @Component({
@@ -12,21 +12,22 @@ import {Subscription} from 'rxjs';
 })
 export class UserEditGroupComponent implements OnInit, OnDestroy {
   userForm: FormGroup;
-  sites: string[];
   users: UserList[];
   disableUserOption: boolean;
-  repos: string[];
   showGroupHeader: boolean;
-
   repo: string;
   repoChanged: Subscription;
   siteChanged: Subscription;
+  stepSubmited: Subscription;
 
-  constructor(private  userSvc: UserSvcService, private aifSvc: AifMcSvcService) {
+  constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService) {
   }
 
   ngOnInit() {
-
+    this.stepSubmited = this.userSvc.logChanged.subscribe(() => {
+      this.users = [];
+      this.disableUserOption = false;
+    });
     this.initForm();
     this.initVar();
 
@@ -34,14 +35,14 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
       (s: string) => {
         this.repo = s;
         this.initForm();
-        this.userForm.get('step.alias.repo').setValue(this.repo);
+        this.userForm.get('step.alias.repository').setValue(this.repo);
 
       });
 
     this.siteChanged = this.aifSvc.siteSubject.subscribe(
       (s: string) => {
         this.initForm();
-        this.userForm.get('step.alias.repo').setValue(this.repo);
+        this.userForm.get('step.alias.repository').setValue(this.repo);
         this.userForm.get('step.alias.site').setValue(s);
         this.userSvc.getUser(this.repo, s).subscribe(
           (data: any) => {
@@ -53,6 +54,7 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.repoChanged.unsubscribe();
+    this.stepSubmited.unsubscribe();
     this.siteChanged.unsubscribe();
   }
 
@@ -61,7 +63,8 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
       'step': new FormGroup({
         'type': new FormControl('addGroups'),
         'alias': new FormGroup({
-          'repo': new FormControl('', Validators.required),
+          'owner': new FormControl(),
+          'repository': new FormControl('', Validators.required),
           'site': new FormControl('', Validators.required)
         }),
         'user': new FormGroup({
@@ -72,8 +75,17 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
     });
   }
 
+  removeAllGroup() {
+    const array = <FormArray> this.userForm.get('step.user.groups');
+
+    while (array.length !== 0) {
+      array.removeAt(0);
+    }
+  }
+
   userSelected(username: string) {
     this.disableUserOption = true;
+    this.removeAllGroup();
     for (const user of this.users) {
       if (username === user.name && user.membership != null) {
         for (const group of user.membership) {
@@ -99,8 +111,9 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    this.userSvc.updateUser(this.userForm.value);
+    this.userSvc.saveUser(this.userForm.value);
     this.initVar();
+    this.aifSvc
 
   }
 

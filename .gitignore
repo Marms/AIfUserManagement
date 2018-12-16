@@ -28,10 +28,10 @@
 /.sass-cache
 /connect.lock
 /coverage
-/libpeerconnection.log
-npm-debug.log
-yarn-error.log
-testem.log
+/libpeerconnection.log.ts
+npm-debug.log.ts
+yarn-error.log.ts
+testem.log.ts
 /typings
 
 # System Files

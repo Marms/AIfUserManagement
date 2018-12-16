@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
-import {UserSvcService} from '../../services/user-svc.service';
-import {AifMcSvcService} from '../../services/aif-mc-svc.service';
+import {UserManagementService} from '../../services/user-management.service';
+import {AifmcService} from '../../services/aifmc.service';
 import {Subscription} from 'rxjs/Subscription';
 import {AifmcHeaderComponent} from '../form-header/aifmc-header.component';
 
@@ -12,13 +12,12 @@ import {AifmcHeaderComponent} from '../form-header/aifmc-header.component';
 export class UserCreateComponent implements OnInit, OnDestroy {
 
   userForm: FormGroup;
-
   repo: string;
   repoChanged: Subscription;
   siteChanged: Subscription;
 
 
-  constructor(private  userSvc: UserSvcService, private aifSvc: AifMcSvcService) {
+  constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService) {
   }
 
 
@@ -35,14 +34,14 @@ export class UserCreateComponent implements OnInit, OnDestroy {
       (s: string) => {
         this.repo = s;
         this.initForm();
-        this.userForm.get('step.alias.repo').setValue(this.repo);
+        this.userForm.get('step.alias.repository').setValue(this.repo);
 
       });
 
     this.siteChanged = this.aifSvc.siteSubject.subscribe(
       (s: string) => {
         this.initForm();
-        this.userForm.get('step.alias.repo').setValue(this.repo);
+        this.userForm.get('step.alias.repository').setValue(this.repo);
         this.userForm.get('step.alias.site').setValue(s);
       });
   }
@@ -53,7 +52,8 @@ export class UserCreateComponent implements OnInit, OnDestroy {
       'step': new FormGroup({
         'type': new FormControl('createUser'),
         'alias': new FormGroup({
-          'repo': new FormControl('', Validators.required),
+          'owner': new FormControl(),
+          'repository': new FormControl('', Validators.required),
           'site': new FormControl('', Validators.required)
         }),
         'user': new FormGroup({
@@ -64,9 +64,8 @@ export class UserCreateComponent implements OnInit, OnDestroy {
     });
   }
 
-
   onSubmit() {
-    console.log(this.userForm.value);
+    this.userSvc.saveUser(this.userForm.value);
     this.userForm.reset();
   }
 }

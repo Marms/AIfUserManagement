@@ -27,11 +27,9 @@
           </div>
         </div>
         <div class="form-row-align-center">
-          <button [disabled]="!userForm.valid" type="submit" class="btn btn-primary">Create User</button>
+          <button [disabled]="!userForm.valid" type="submit" class="btn btn-primary">Update User group</button>
           <span> </span>
-          <button [disabled]="!userForm.valid" class="btn btn-success" type="button" (click)="addGroup()">Add
-            group
-          </button>
+          <button [disabled]="!userForm.valid" class="btn btn-success" type="button" (click)="addGroup()">Add new group</button>
         </div>
 
         <div class="form-row" *ngIf="showGroupHeader">
@@ -51,7 +49,7 @@
                    [formControlName]="i"
             ></div>
           <div class="form-group col-md-2">
-            <button class="btn btn-warning" type="button" (click)="deleteGroup(i)">Delete</button>
+            <button class="btn btn-danger" type="button" (click)="deleteGroup(i)">X</button>
           </div>
         </div>
       </div>

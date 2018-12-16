@@ -1,0 +1,13 @@
+<br>
+<br>
+<h5>logs</h5>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="list-group">
+        <app-log-list-item class="list-group-item"
+        *ngFor="let logItem of logs"
+        [logItem]="logItem"
+        ></app-log-list-item>
+      </div>
+    </div>
+  </div>

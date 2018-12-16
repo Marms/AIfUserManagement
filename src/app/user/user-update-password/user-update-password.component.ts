@@ -1,9 +1,9 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Form, FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
-import {UserSvcService} from '../../services/user-svc.service';
+import {UserManagementService} from '../../services/user-management.service';
 import {AbstractControl} from '@angular/forms/src/model';
-import {AifMcSvcService} from '../../services/aif-mc-svc.service';
-import {UserList} from '../../services/userList';
+import {AifmcService} from '../../services/aifmc.service';
+import {UserList} from '../../services/shared/userList';
 import {Subscription} from 'rxjs';
 
 @Component({
@@ -18,22 +18,25 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
   owners: string[];
   users: UserList[];
   disableUserOption: boolean;
-
   repoChanged: Subscription;
   siteChanged: Subscription;
+  stepSubmited: Subscription;
 
-  constructor(private  userSvc: UserSvcService, private aifSvc: AifMcSvcService) {
+  constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService) {
   }
 
   ngOnInit() {
     this.initForm();
-    this.initVar();
-
+    this.stepSubmited = this.userSvc.logChanged.subscribe(
+      () => {
+        this.users = [];
+        this.disableUserOption = false;
+      }
+    );
     this.repoChanged = this.aifSvc.repoSubject.subscribe(
       (s: string) => {
         this.repo = s;
-        this.userForm.get('step.alias.repo').setValue(this.repo);
-
+        this.userForm.get('step.alias.repository').setValue(this.repo);
       });
 
     this.siteChanged = this.aifSvc.siteSubject.subscribe(
@@ -47,6 +50,7 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
         );
       });
   }
+
   ngOnDestroy() {
     this.repoChanged.unsubscribe();
     this.siteChanged.unsubscribe();
@@ -56,14 +60,15 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
   initForm() {
     this.userForm = new FormGroup({
       'step': new FormGroup({
-        'type': new FormControl('updatePasswordUser'),
+        'type': new FormControl('updatePassword'),
         'alias': new FormGroup({
-          'repo': new FormControl('', Validators.required),
+          'owner': new FormControl(),
+          'repository': new FormControl('', Validators.required),
           'site': new FormControl('', Validators.required)
         }),
         'user': new FormGroup({
           'username': new FormControl(null, Validators.required),
-          'password': new FormControl(null, Validators.required)
+          'password': new FormControl(null, Validators.required),
         })
       })
     });
@@ -79,7 +84,8 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    this.userSvc.updateUser(this.userForm.value);
+    console.log(this.userForm.value);
+    this.userSvc.saveUser(this.userForm.value);
     this.initVar();
 
   }
