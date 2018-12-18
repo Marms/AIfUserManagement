@@ -18,7 +18,7 @@ export class LogListComponent implements OnInit , OnDestroy{
     this.logs = this.userSvc.getLogs();
     this.logsSubscription = this.userSvc.logChanged.subscribe(
       (data: Log[]) => {
-          this.logs = data;
+          this.logs = data.reverse();
       }
     );
   }
