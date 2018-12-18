@@ -7,25 +7,16 @@ import {Subscription} from 'rxjs/Subscription';
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.css']
 })
-export class UserComponent implements OnInit, OnDestroy{
+export class UserComponent implements OnInit, OnDestroy {
 
-  loaderSubscription: Subscription;
 
-  showLoader;
-
-  constructor(private loaderSvc: LoaderService) {
+  constructor() {
   }
 
   ngOnInit() {
-    this.showLoader = false;
-    this.loaderSubscription = this.loaderSvc.status.subscribe(
-      (val: boolean) => {
-        this.showLoader = val;
-      }
-    );
   }
+
   ngOnDestroy() {
-    this.loaderSubscription.unsubscribe();
   }
 
 }

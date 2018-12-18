@@ -21,6 +21,20 @@ export class UserManagementService {
 
   header = new Headers({'Content-Type': 'application/json'});
 
+  saveGroup(step: any) {
+    console.log(step);
+    this.loaderSvc.display(true);
+    this.http.post(this.url + 'groups', step, {headers: this.header})
+      .subscribe((response: Response) => {
+        const log = new Log();
+        log.results = response.json().results;
+        log.step = step.step;
+        this.logs.push(log);
+        this.logChanged.next(this.getLogs());
+        this.loaderSvc.display(false);
+      });
+  }
+
   saveUser(step: any) {
     console.log(step);
     this.loaderSvc.display(true);

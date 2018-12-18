@@ -4,6 +4,7 @@ import {UserManagementService} from '../../services/user-management.service';
 import {AifmcService} from '../../services/aifmc.service';
 import {Subscription} from 'rxjs/Subscription';
 import {AifmcHeaderComponent} from '../form-header/aifmc-header.component';
+import {FormFactoryService} from '../../services/form-factory.service';
 
 @Component({
   selector: 'app-user-create',
@@ -17,19 +18,17 @@ export class UserCreateComponent implements OnInit, OnDestroy {
   siteChanged: Subscription;
 
 
-  constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService) {
+  constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService,
+              private formFactory: FormFactoryService) {
   }
-
 
   ngOnDestroy() {
     this.repoChanged.unsubscribe();
     this.siteChanged.unsubscribe();
-
   }
 
   ngOnInit() {
     this.initForm();
-
     this.repoChanged = this.aifSvc.repoSubject.subscribe(
       (s: string) => {
         this.repo = s;
@@ -48,20 +47,7 @@ export class UserCreateComponent implements OnInit, OnDestroy {
 
   // creation du formulaire
   initForm() {
-    this.userForm = new FormGroup({
-      'step': new FormGroup({
-        'type': new FormControl('createUser'),
-        'alias': new FormGroup({
-          'owner': new FormControl(),
-          'repository': new FormControl('', Validators.required),
-          'site': new FormControl('', Validators.required)
-        }),
-        'user': new FormGroup({
-          'username': new FormControl(null, Validators.required),
-          'password': new FormControl(null, Validators.required),
-        })
-      })
-    });
+    this.userForm = this.formFactory.createUserFormulaire();
   }
 
   onSubmit() {

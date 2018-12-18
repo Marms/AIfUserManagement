@@ -5,6 +5,7 @@ import {AbstractControl} from '@angular/forms/src/model';
 import {AifmcService} from '../../services/aifmc.service';
 import {UserList} from '../../services/shared/userList';
 import {Subscription} from 'rxjs';
+import {FormFactoryService} from '../../services/form-factory.service';
 
 @Component({
   selector: 'app-user-edit-group',
@@ -20,7 +21,9 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   siteChanged: Subscription;
   stepSubmited: Subscription;
 
-  constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService) {
+  constructor(private  userSvc: UserManagementService,
+              private aifSvc: AifmcService
+    , private formFactory: FormFactoryService) {
   }
 
   ngOnInit() {
@@ -59,25 +62,12 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   }
 
   initForm() {
-    this.userForm = new FormGroup({
-      'step': new FormGroup({
-        'type': new FormControl('addGroups'),
-        'alias': new FormGroup({
-          'owner': new FormControl(),
-          'repository': new FormControl('', Validators.required),
-          'site': new FormControl('', Validators.required)
-        }),
-        'user': new FormGroup({
-          'username': new FormControl(null, Validators.required),
-          'groups': new FormArray([])
-        })
-      })
-    });
+    this.userForm = this.formFactory.userEditFormulaire();
+
   }
 
   removeAllGroup() {
     const array = <FormArray> this.userForm.get('step.user.groups');
-
     while (array.length !== 0) {
       array.removeAt(0);
     }
@@ -113,7 +103,7 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   onSubmit() {
     this.userSvc.saveUser(this.userForm.value);
     this.initVar();
-    this.aifSvc
+    this.aifSvc;
 
   }
 

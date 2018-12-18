@@ -6,7 +6,10 @@
     <div class="container">
       <router-outlet></router-outlet>
     </div>
-     <router-outlet></router-outlet>
+    <router-outlet>
+      <span *ngIf="showLoader" class="loading"></span>
+    </router-outlet>
+    <app-log-list></app-log-list>
   </div>
 
 </div>

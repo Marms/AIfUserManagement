@@ -1,0 +1,82 @@
+import {Injectable} from '@angular/core';
+import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class FormFactoryService {
+
+  constructor() {
+  }
+
+  updatePasswordFormulaire(): FormGroup {
+    return new FormGroup({
+      'step': new FormGroup({
+        'type': new FormControl('updatePassword'),
+        'alias': new FormGroup({
+          'owner': new FormControl(),
+          'repository': new FormControl('', Validators.required),
+          'site': new FormControl('', Validators.required)
+        }),
+        'user': new FormGroup({
+          'username': new FormControl(null, Validators.required),
+          'password': new FormControl(null, Validators.required),
+        })
+      })
+    });
+  }
+
+  userEditFormulaire(): FormGroup {
+    const form = new FormGroup
+    ({
+      'step': new FormGroup({
+        'type': new FormControl('addGroups'),
+        'alias': new FormGroup({
+          'owner': new FormControl(),
+          'repository': new FormControl('', Validators.required),
+          'site': new FormControl('', Validators.required)
+        }),
+        'user': new FormGroup({
+          'username': new FormControl(null, Validators.required),
+          'groups': new FormArray([])
+        })
+      })
+    });
+    return form;
+  }
+
+  createGroupFormulaire(): FormGroup {
+    const form = new FormGroup({
+      'step': new FormGroup({
+        'type': new FormControl('createGroup'),
+        'alias': new FormGroup({
+          'owner': new FormControl(),
+          'repository': new FormControl('', Validators.required),
+          'site': new FormControl('', Validators.required)
+        }),
+        'group': new FormGroup({
+          'groupname': new FormControl(null, Validators.required)
+        })
+      })
+    });
+    return form;
+  }
+
+  createUserFormulaire(): FormGroup {
+    const userForm = new FormGroup({
+      'step': new FormGroup({
+        'type': new FormControl('createUser'),
+        'alias': new FormGroup({
+          'owner': new FormControl(),
+          'repository': new FormControl('', Validators.required),
+          'site': new FormControl('', Validators.required)
+        }),
+        'user': new FormGroup({
+          'username': new FormControl(null, Validators.required),
+          'password': new FormControl(null, Validators.required),
+        })
+      })
+    });
+    return userForm;
+  }
+}

@@ -5,6 +5,7 @@ import {AbstractControl} from '@angular/forms/src/model';
 import {AifmcService} from '../../services/aifmc.service';
 import {UserList} from '../../services/shared/userList';
 import {Subscription} from 'rxjs';
+import {FormFactoryService} from '../../services/form-factory.service';
 
 @Component({
   selector: 'app-user-update-password',
@@ -22,7 +23,8 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
   siteChanged: Subscription;
   stepSubmited: Subscription;
 
-  constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService) {
+  constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService
+    , private formFactory: FormFactoryService) {
   }
 
   ngOnInit() {
@@ -58,20 +60,8 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
 
 
   initForm() {
-    this.userForm = new FormGroup({
-      'step': new FormGroup({
-        'type': new FormControl('updatePassword'),
-        'alias': new FormGroup({
-          'owner': new FormControl(),
-          'repository': new FormControl('', Validators.required),
-          'site': new FormControl('', Validators.required)
-        }),
-        'user': new FormGroup({
-          'username': new FormControl(null, Validators.required),
-          'password': new FormControl(null, Validators.required),
-        })
-      })
-    });
+    this.userForm = this.formFactory.updatePasswordFormulaire();
+
   }
 
   userSelected(username: string) {
