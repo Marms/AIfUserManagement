@@ -2,43 +2,32 @@
   <div>
     <div formGroupName="step">
       <div formGroupName="alias">
-       <app-aifmc-header></app-aifmc-header>
-        <!-- <div class="form-group">
-          <div class="form-row">
-            <label class="control-label" for="site">site</label>
-            <select formControlName="site" (change)="siteSelected()"
-                    id="site" class="form-control"
-            >
-              <option *ngIf="!disableSiteOption" selected value="">Please select</option>
-              <option *ngFor="let site of sites" (value)="site"> {{site}}</option>
-            </select>
-
-          </div>
-        </div> -->
+        <app-aifmc-header></app-aifmc-header>
       </div>
       <div formGroupName="user">
         <div class="form-group">
           <div class="form-row">
             <label class="control-label" for="username">Username</label>
-            <select class="form-control" id="username" formControlName="username" (change)="userSelected($event.target.value)">
-               <option *ngIf="!disableUserOption" selected value="">Please select</option>
+            <select class="form-control" id="username" formControlName="username"
+                    (change)="userSelected($event.target.value)">
+              <option *ngIf="!disableUserOption" selected value="">Please select</option>
               <option *ngFor="let user of users" (value)="user.name">{{user.name}}</option>
             </select>
           </div>
         </div>
         <div class="form-row-align-center">
           <button [disabled]="!userForm.valid" type="submit" class="btn btn-primary">Update User group</button>
-          <span> </span>
-          <button [disabled]="!userForm.valid" class="btn btn-success" type="button" (click)="addGroup()">Add new group</button>
         </div>
 
-        <div class="form-row" *ngIf="showGroupHeader">
+        <ng-template [ngIf]="showGroupHeader">
+
+
+        <div class="form-row">
           <div class="form-group col-md-10">
             <label class="control-label">Groups</label>
           </div>
           <div class="form-group col-md-2">
             <label class="control-label">Action</label>
-
           </div>
         </div>
         <div class="form-row" formArrayName="groups" formArrayName="groups"
@@ -47,11 +36,25 @@
             <input type="text"
                    class="form-control"
                    [formControlName]="i"
+                   disabled
             ></div>
           <div class="form-group col-md-2">
             <button class="btn btn-danger" type="button" (click)="deleteGroup(i)">X</button>
           </div>
         </div>
+        <div class="form-row">
+          <div class="form-group col-md-10">
+            <select class="form-control" id="selectGroup" (change)="groupSelected($event.target.value)">
+              <option selected name="select" value="_DONT_ADD_" class="form-control">
+              </option>
+              <option *ngFor="let group of getFilteredGroup()" (value)="group">{{group}} </option>
+            </select>
+          </div>
+          <div class="form-group col-md-2">
+            <button class="btn btn-success" type="button" (click)="addOneGroup()">+</button>
+          </div>
+        </div>
+        </ng-template>
       </div>
     </div>
   </div>

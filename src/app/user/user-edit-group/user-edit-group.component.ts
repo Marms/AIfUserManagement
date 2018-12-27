@@ -14,19 +14,25 @@ import {FormFactoryService} from '../../services/form-factory.service';
 export class UserEditGroupComponent implements OnInit, OnDestroy {
   userForm: FormGroup;
   users: UserList[];
+  user: UserList;
   disableUserOption: boolean;
   showGroupHeader: boolean;
   repo: string;
+  groups: UserList[];
+  group: string;
+
+  site: string;
   repoChanged: Subscription;
   siteChanged: Subscription;
   stepSubmited: Subscription;
 
   constructor(private  userSvc: UserManagementService,
-              private aifSvc: AifmcService
-    , private formFactory: FormFactoryService) {
+              private aifSvc: AifmcService,
+              private formFactory: FormFactoryService) {
   }
 
   ngOnInit() {
+
     this.stepSubmited = this.userSvc.logChanged.subscribe(() => {
       this.users = [];
       this.disableUserOption = false;
@@ -39,19 +45,27 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
         this.repo = s;
         this.initForm();
         this.userForm.get('step.alias.repository').setValue(this.repo);
-
       });
 
     this.siteChanged = this.aifSvc.siteSubject.subscribe(
       (s: string) => {
         this.initForm();
+        this.site = s;
         this.userForm.get('step.alias.repository').setValue(this.repo);
         this.userForm.get('step.alias.site').setValue(s);
         this.userSvc.getUser(this.repo, s).subscribe(
           (data: any) => {
+
             this.users = data.users;
           }
         );
+
+        this.userSvc.getGroups(this.repo, s).subscribe(
+          (d: any) => {
+            this.groups = d.groups;
+          }
+        );
+
       });
   }
 
@@ -78,6 +92,7 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
     this.removeAllGroup();
     for (const user of this.users) {
       if (username === user.name && user.membership != null) {
+        this.user = user;
         for (const group of user.membership) {
           const control = new FormControl();
           control.patchValue(group);
@@ -86,10 +101,12 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
         }
       }
     }
-    this.manageGroupHeader(<FormArray> this.userForm.get('step.user.groups'));
+    this.showGroupHeader = true;
   }
 
   initVar() {
+    this.group = '_DONT_ADD_';
+    this.user = new UserList();
     this.disableUserOption = false;
     this.userForm.reset();
     const array: FormArray = (<FormArray> this.userForm.get('step.user.groups'));
@@ -103,32 +120,51 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   onSubmit() {
     this.userSvc.saveUser(this.userForm.value);
     this.initVar();
-    this.aifSvc;
-
   }
 
   getGroups(): AbstractControl[] {
     return (<FormArray>this.userForm.get('step.user.groups')).controls;
   }
 
-  addGroup() {
-    const array: FormArray = (<FormArray>this.userForm.get('step').get('user').get('groups'));
-    array.push(new FormControl('', Validators.required));
-    this.manageGroupHeader(array);
-  }
-
-  deleteGroup(index: number) {
-    const array: FormArray = (<FormArray>this.userForm.get('step').get('user').get('groups'));
-    array.removeAt(index);
-    this.manageGroupHeader(array);
-  }
-
-  manageGroupHeader(array: FormArray) {
-    if (array.length === 0) {
-      this.showGroupHeader = false;
-    } else {
-      this.showGroupHeader = true;
+  addOneGroup() {
+    if (this.group !== '_DONT_ADD_') {
+      console.log(this.group);
+      const array: FormArray = (<FormArray>this.userForm.get('step.user.groups'));
+      array.push(new FormControl(this.group, Validators.required));
+      this.user.membership.push(this.group);
+      const selectTags: HTMLSelectElement = (<HTMLSelectElement> document.getElementById('selectGroup'));
+      selectTags.selectedIndex = 0;
+      this.group = '_DONT_ADD_';
     }
   }
 
+  deleteGroup(index: number) {
+    const array: FormArray = (<FormArray>this.userForm.get('step.user.groups'));
+    array.removeAt(index);
+    this.user.membership.splice(index, 1);
+  }
+
+
+  groupSelected(group: string) {
+    this.group = group;
+  }
+
+  /***
+   * Parcourt des group et retirer les groupes déjà présent dans l'utilisateur
+   */
+  getFilteredGroup(): string[] {
+    const array: string[] = [];
+    for (const gg of this.groups) {
+      let trouve = false;
+      for (const s of this.user.membership) {
+        if (gg.name === s) {
+          trouve = true;
+        }
+      }
+      if (!trouve) {
+        array.push(gg.name);
+      }
+    }
+    return array;
+  }
 }
