@@ -7,13 +7,13 @@
         {{logItem.step.user.username}}
       </p></div>
     <div class="col-md-4">
+      <a class=""(click)="clipboard()">Clipboard</a>
       <button [ngClass]="getStatusClasses(globalStatus)"
               class="pull-right btn"
               (click)="showDetail()">{{buttonLabel}}
       </button>
     </div>
   </div>
-
 </div>
 <br>
 <ng-template [ngIf]="showResult">

@@ -45,4 +45,7 @@ export class LogListItemComponent implements OnInit {
     }
   }
 
+  clipboard() {
+    navigator['clipboard'].writeText(JSON.stringify(this.logItem.results, null, 2));
+  }
 }
