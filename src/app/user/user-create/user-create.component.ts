@@ -16,6 +16,16 @@ export class UserCreateComponent implements OnInit, OnDestroy {
   repo: string;
   repoChanged: Subscription;
   siteChanged: Subscription;
+  show: boolean = false;
+
+  toggleShow(pass: any) {
+    this.show = !this.show;
+    if (this.show) {
+      pass.type = 'text';
+    } else {
+      pass.type = 'password';
+    }
+  }
 
 
   constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService,

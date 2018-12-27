@@ -19,10 +19,12 @@
         <div class="form-group">
           <div class="form-row">
             <label class="-label" for="password">Password</label>
-            <input type="password" formControlName="password"
+            <input type="password" formControlName="password" #pass
                    id="password"
                    class="form-control"
             >
+            <a (click)="toggleShow(pass)">show/hide</a>
+
           </div>
         </div>
         <div class="form-row-align-center">

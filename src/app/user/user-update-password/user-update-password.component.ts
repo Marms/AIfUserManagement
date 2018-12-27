@@ -24,6 +24,18 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
   siteChanged: Subscription;
   stepSubmited: Subscription;
 
+  show: boolean = false;
+
+  toggleShow(pass: any) {
+    this.show = !this.show;
+    console.log(pass);
+    if (this.show) {
+      pass.type = 'text';
+    } else {
+      pass.type = 'password';
+    }
+  }
+
   constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService
     , private formFactory: FormFactoryService, private  loggerSvc: LoggerService) {
   }
@@ -79,7 +91,6 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
     console.log(this.userForm.value);
     this.userSvc.saveUser(this.userForm.value);
     this.initVar();
-
   }
 
 }
