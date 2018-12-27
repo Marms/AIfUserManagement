@@ -5,6 +5,7 @@ import {AifmcService} from '../../services/aifmc.service';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs';
 import {UserManagementService} from '../../services/user-management.service';
+import {LoggerService} from '../../services/logger.service';
 
 @Component({
   selector: 'app-aifmc-header',
@@ -26,7 +27,9 @@ export class AifmcHeaderComponent implements OnInit, OnDestroy {
   repoChanged: Subscription;
   siteChanged: Subscription;
 
-  constructor(private aifSvc: AifmcService, private userSvc: UserManagementService) {
+  constructor(private aifSvc: AifmcService,
+              private userSvc: UserManagementService,
+              private loggerSvc: LoggerService) {
   }
 
   ngOnDestroy() {
@@ -39,12 +42,14 @@ export class AifmcHeaderComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.aifSvc.getOwners()
       .subscribe((data: any) => {
-        this.owners = data.owners;
-      });
+          this.owners = data.owners;
+        },
+        error1 => this.aifSvc.handleError(error1));
 
-    this.stepSubmit = this.userSvc.logChanged.subscribe(() => {
+    this.stepSubmit = this.loggerSvc.logChanged.subscribe(() => {
       this.reset();
     });
+
     this.ownerChanged = this.aifSvc.ownerSubject.subscribe((s: string) => {
       this.disableRepoOption = false;
       this.repos = [];
@@ -55,6 +60,8 @@ export class AifmcHeaderComponent implements OnInit, OnDestroy {
       this.aifSvc.getRepos(s)
         .subscribe((data: any) => {
           this.repos = data.repositories;
+        }, error1 => {
+          this.aifSvc.handleError(error1);
         });
     });
 
@@ -64,6 +71,8 @@ export class AifmcHeaderComponent implements OnInit, OnDestroy {
       this.aifSvc.getSites(this.owner, s)
         .subscribe((site: any) => {
           this.sites = site.sites;
+        }, error1 => {
+          this.aifSvc.handleError(error1);
         });
     });
   }

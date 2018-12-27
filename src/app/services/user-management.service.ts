@@ -5,36 +5,26 @@ import {environment} from '../../environments/environment';
 import {StepResult} from './shared/stepResult';
 import {Log} from './shared/log';
 import {LoaderService} from './loader.service';
+import {LoggerService} from './logger.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserManagementService {
   url: string;
-  logChanged: Subject<Log[]> = new Subject<Log[]>();
 
-  logs: Log[] = [] ;
-
-  constructor(private http: Http, private loaderSvc: LoaderService) {
+  constructor(private http: Http, private loaderSvc: LoaderService, private loggerSvc: LoggerService) {
     this.url = environment.afsUserManagerUrl + '/rest/AFSUserManager/v1/';
   }
 
   header = new Headers({'Content-Type': 'application/json'});
-
-  addLog(step: any, results: any) {
-    const log = new Log();
-    log.results = results;
-    log.step = step.step;
-    this.logs.push(log);
-    this.logChanged.next(this.getLogs());
-  }
 
   saveGroup(step: any) {
     console.log(step);
     this.loaderSvc.display(true);
     this.http.post(this.url + 'groups', step, {headers: this.header})
       .subscribe((response: Response) => {
-        this.addLog(step, response.json().results);
+        this.loggerSvc.addLog(step, response.json().results);
         this.loaderSvc.display(false);
       });
   }
@@ -43,10 +33,10 @@ export class UserManagementService {
     console.log(step);
     this.loaderSvc.display(true);
     this.http.post(this.url + 'users', step, {headers: this.header})
-    .subscribe((response: Response) => {
-      this.addLog(step, response.json().results);
+      .subscribe((response: Response) => {
+        this.loggerSvc.addLog(step, response.json().results);
         this.loaderSvc.display(false);
-    });
+      });
   }
 
   getUser(repos: string, site: string) {
@@ -59,17 +49,23 @@ export class UserManagementService {
       });
   }
 
+  handleError(error) {
+    this.loaderSvc.display(false);
+    console.log(error);
+  }
+
   getGroups(repos: string, site: string) {
     this.loaderSvc.display(true);
     return this.http.get(this.url + 'groups?repo=' + repos + '&site=' + site, {headers: this.header})
       .map((response: Response) => {
+        if (response.status < 200 || response.status >= 300) {
+          this.loaderSvc.display(false);
+          throw new Error('This request has failed ' + response.status);
+        }
         const data = response.json();
         this.loaderSvc.display(false);
         return data;
       });
   }
 
-  getLogs(): Log[] {
-    return this.logs.slice();
-  }
 }

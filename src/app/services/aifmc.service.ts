@@ -33,11 +33,10 @@ export class AifmcService {
     this.loaderSvc.display(true);
     return this.http.get(this.url + 'owners', {headers: this.getToken()})
       .map((response: Response) => {
-        this.loaderSvc.display(false);
-        return response.json();
-      }, (error) => {
-        this.handleError(error);
-      });
+          this.loaderSvc.display(false);
+          return response.json();
+        }
+      );
   }
 
   handleError(error) {
@@ -49,11 +48,10 @@ export class AifmcService {
     this.loaderSvc.display(true);
     return this.http.get(this.url + 'owners/' + ownerId + '/repos?foraction=deploy', {headers: this.getToken()})
       .map((response: Response) => {
-        this.loaderSvc.display(false);
-        return response.json();
-      }, (error) => {
-        this.handleError(error);
-      });
+          this.loaderSvc.display(false);
+          return response.json();
+        }
+      );
   }
 
 
@@ -64,8 +62,6 @@ export class AifmcService {
         const data = response.json();
         this.loaderSvc.display(false);
         return data;
-      }, (error) => {
-        this.handleError(error);
       });
   }
 

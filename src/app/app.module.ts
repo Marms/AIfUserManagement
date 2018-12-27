@@ -17,6 +17,7 @@ import { LogListComponent } from './user/log-list/log-list.component';
 import { LogListItemComponent } from './user/log-list/log-list-item/log-list-item.component';
 import {LoaderService} from './services/loader.service';
 import { GroupCreateComponent } from './user/group-create/group-create.component';
+import {LoggerService} from './services/logger.service';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,7 @@ import { GroupCreateComponent } from './user/group-create/group-create.component
     HttpModule,
     AppRoutingModule
   ],
-  providers: [UserManagementService, AifmcService, LoaderService],
+  providers: [UserManagementService, AifmcService, LoaderService, LoggerService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -6,6 +6,7 @@ import {AifmcService} from '../../services/aifmc.service';
 import {UserList} from '../../services/shared/userList';
 import {Subscription} from 'rxjs';
 import {FormFactoryService} from '../../services/form-factory.service';
+import {LoggerService} from '../../services/logger.service';
 
 @Component({
   selector: 'app-user-update-password',
@@ -24,12 +25,12 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
   stepSubmited: Subscription;
 
   constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService
-    , private formFactory: FormFactoryService) {
+    , private formFactory: FormFactoryService, private  loggerSvc: LoggerService) {
   }
 
   ngOnInit() {
     this.initForm();
-    this.stepSubmited = this.userSvc.logChanged.subscribe(
+    this.stepSubmited = this.loggerSvc.logChanged.subscribe(
       () => {
         this.users = [];
         this.disableUserOption = false;
@@ -48,7 +49,8 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
         this.userSvc.getUser(this.repo, s).subscribe(
           (data: any) => {
             this.users = data.users;
-          }
+          },
+          error1 => this.userSvc.handleError(error1)
         );
       });
   }

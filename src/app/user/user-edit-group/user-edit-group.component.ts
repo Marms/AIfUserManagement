@@ -6,6 +6,7 @@ import {AifmcService} from '../../services/aifmc.service';
 import {UserList} from '../../services/shared/userList';
 import {Subscription} from 'rxjs';
 import {FormFactoryService} from '../../services/form-factory.service';
+import {LoggerService} from '../../services/logger.service';
 
 @Component({
   selector: 'app-user-edit-group',
@@ -22,18 +23,20 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   group: string;
 
   site: string;
+
   repoChanged: Subscription;
   siteChanged: Subscription;
   stepSubmited: Subscription;
 
   constructor(private  userSvc: UserManagementService,
               private aifSvc: AifmcService,
-              private formFactory: FormFactoryService) {
+              private formFactory: FormFactoryService,
+              private loggerSvc: LoggerService) {
   }
 
   ngOnInit() {
 
-    this.stepSubmited = this.userSvc.logChanged.subscribe(() => {
+    this.stepSubmited = this.loggerSvc.logChanged.subscribe(() => {
       this.users = [];
       this.disableUserOption = false;
     });
@@ -57,13 +60,15 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
           (data: any) => {
 
             this.users = data.users;
-          }
+          },
+          error1 => this.userSvc.handleError(error1)
         );
 
         this.userSvc.getGroups(this.repo, s).subscribe(
           (d: any) => {
             this.groups = d.groups;
-          }
+          },
+          error1 => this.userSvc.handleError(error1)
         );
 
       });
@@ -77,7 +82,6 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.userForm = this.formFactory.userEditFormulaire();
-
   }
 
   removeAllGroup() {
@@ -107,13 +111,13 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   initVar() {
     this.group = '_DONT_ADD_';
     this.user = new UserList();
+    this.user.membership = [];
     this.disableUserOption = false;
     this.userForm.reset();
     const array: FormArray = (<FormArray> this.userForm.get('step.user.groups'));
     while (array.length !== 0) {
       array.removeAt(0);
     }
-
     this.userForm.reset();
   }
 
@@ -143,7 +147,6 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
     array.removeAt(index);
     this.user.membership.splice(index, 1);
   }
-
 
   groupSelected(group: string) {
     this.group = group;
