@@ -11,4 +11,7 @@ export class Step {
     username: string;
     groups: string[];
   };
+  group: {
+    groupname: string;
+  };
 }

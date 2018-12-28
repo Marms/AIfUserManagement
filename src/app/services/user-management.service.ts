@@ -26,7 +26,7 @@ export class UserManagementService {
       .subscribe((response: Response) => {
         this.loggerSvc.addLog(step, response.json().results);
         this.loaderSvc.display(false);
-      });
+      }, error1 => this.handleError(error1));
   }
 
   saveUser(step: any) {
@@ -36,7 +36,7 @@ export class UserManagementService {
       .subscribe((response: Response) => {
         this.loggerSvc.addLog(step, response.json().results);
         this.loaderSvc.display(false);
-      });
+      }, error1 => this.handleError(error1));
   }
 
   getUser(repos: string, site: string) {

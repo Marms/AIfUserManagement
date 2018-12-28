@@ -3,8 +3,12 @@
     <div class="col-md-4">
       <h4 class="pull-left">{{logItem.step.type}}</h4></div>
     <div class="col-md-4">
-      <p class="pull-left">
+      <p class="pull-left" *ngIf="logItem.step.type !== 'createGroup'">
+
         {{logItem.step.user.username}}
+      </p>
+      <p class="pull-left" *ngIf="logItem.step.type === 'createGroup'">
+        {{logItem.step.group.groupname}}
       </p></div>
     <div class="col-md-4">
       <a class=""(click)="clipboard()">Clipboard</a>
