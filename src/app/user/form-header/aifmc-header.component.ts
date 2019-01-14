@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
-import {UserList} from '../../services/shared/userList';
+import {UserItem} from '../../services/shared/userItem';
 import {AifmcService} from '../../services/aifmc.service';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs';

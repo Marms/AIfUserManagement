@@ -5,6 +5,7 @@ export class Step {
   alias: {
     owner: string;
     repo: string;
+    repository: string;
     site: string;
   };
   user: {

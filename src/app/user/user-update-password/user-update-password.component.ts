@@ -3,7 +3,7 @@ import {Form, FormArray, FormControl, FormGroup, Validators} from '@angular/form
 import {UserManagementService} from '../../services/user-management.service';
 import {AbstractControl} from '@angular/forms/src/model';
 import {AifmcService} from '../../services/aifmc.service';
-import {UserList} from '../../services/shared/userList';
+import {UserItem} from '../../services/shared/userItem';
 import {Subscription} from 'rxjs';
 import {FormFactoryService} from '../../services/form-factory.service';
 import {LoggerService} from '../../services/logger.service';
@@ -18,7 +18,7 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
   site: string;
   repo: string;
   owners: string[];
-  users: UserList[];
+  users: UserItem[];
   disableUserOption: boolean;
   repoChanged: Subscription;
   siteChanged: Subscription;
@@ -91,6 +91,14 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
     console.log(this.userForm.value);
     this.userSvc.saveUser(this.userForm.value);
     this.initVar();
+  }
+
+  eyeClass() {
+    if (this.show) {
+      return 'fa fa-eye-slash';
+    } else {
+      return 'fa fa-eye';
+    }
   }
 
 }

@@ -64,4 +64,12 @@ export class UserCreateComponent implements OnInit, OnDestroy {
     this.userSvc.saveUser(this.userForm.value);
     this.userForm.reset();
   }
+
+  eyeClass() {
+    if (this.show) {
+      return 'fa fa-eye-slash';
+    } else {
+      return 'fa fa-eye';
+    }
+  }
 }

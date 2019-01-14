@@ -1,4 +1,4 @@
-export class UserList {
+export class UserItem {
   name: string;
   membership: string[];
 }

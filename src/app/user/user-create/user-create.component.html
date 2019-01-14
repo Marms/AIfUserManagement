@@ -18,13 +18,16 @@
         </div>
         <div class="form-group">
           <div class="form-row">
-            <label class="-label" for="password">Password</label>
-            <input type="password" formControlName="password" #pass
-                   id="password"
-                   class="form-control"
-            >
-            <a (click)="toggleShow(pass)">show/hide</a>
-
+            <label class="form-label" for="password">Password</label>
+            <div class="input-group">
+              <input type="password" formControlName="password" #pass
+                     id="password"
+                     class="form-control"
+              >
+              <div class="input-group-addon">
+                <a (click)="toggleShow(pass)" ><i [ngClass]="eyeClass()" aria-hidden="true"></i></a>
+              </div>
+            </div>
           </div>
         </div>
         <div class="form-row-align-center">

@@ -3,7 +3,7 @@ import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 import {UserManagementService} from '../../services/user-management.service';
 import {AbstractControl} from '@angular/forms/src/model';
 import {AifmcService} from '../../services/aifmc.service';
-import {UserList} from '../../services/shared/userList';
+import {UserItem} from '../../services/shared/userItem';
 import {Subscription} from 'rxjs';
 import {FormFactoryService} from '../../services/form-factory.service';
 import {LoggerService} from '../../services/logger.service';
@@ -14,12 +14,12 @@ import {LoggerService} from '../../services/logger.service';
 })
 export class UserEditGroupComponent implements OnInit, OnDestroy {
   userForm: FormGroup;
-  users: UserList[];
-  user: UserList;
+  users: UserItem[];
+  user: UserItem;
   disableUserOption: boolean;
   showGroupHeader: boolean;
   repo: string;
-  groups: UserList[];
+  groups: UserItem[];
   group: string;
 
   site: string;
@@ -110,7 +110,8 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
 
   initVar() {
     this.group = '_DONT_ADD_';
-    this.user = new UserList();
+    this.showGroupHeader = false;
+    this.user = new UserItem();
     this.user.membership = [];
     this.disableUserOption = false;
     this.userForm.reset();
