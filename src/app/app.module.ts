@@ -18,6 +18,7 @@ import { LogListItemComponent } from './user/log-list/log-list-item/log-list-ite
 import {LoaderService} from './services/loader.service';
 import { GroupCreateComponent } from './user/group-create/group-create.component';
 import {LoggerService} from './services/logger.service';
+import { LogsComponent } from './logs/logs.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import {LoggerService} from './services/logger.service';
     AifmcHeaderComponent,
     LogListComponent,
     LogListItemComponent,
-    GroupCreateComponent
+    GroupCreateComponent,
+    LogsComponent
   ],
   imports: [
     ReactiveFormsModule,

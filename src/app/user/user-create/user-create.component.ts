@@ -14,6 +14,7 @@ export class UserCreateComponent implements OnInit, OnDestroy {
 
   userForm: FormGroup;
   repo: string;
+  ownerChanged: Subscription;
   repoChanged: Subscription;
   siteChanged: Subscription;
   show: boolean = false;
@@ -35,10 +36,18 @@ export class UserCreateComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.repoChanged.unsubscribe();
     this.siteChanged.unsubscribe();
+    this.ownerChanged.unsubscribe();
   }
 
   ngOnInit() {
     this.initForm();
+
+    this.ownerChanged = this.aifSvc.ownerSubject.subscribe(
+      (s: string) => {
+        this.initForm();
+        this.userForm.get('step.alias.owner').setValue(s);
+      }
+    );
     this.repoChanged = this.aifSvc.repoSubject.subscribe(
       (s: string) => {
         this.repo = s;

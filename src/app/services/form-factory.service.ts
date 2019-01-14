@@ -6,12 +6,16 @@ import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 })
 export class FormFactoryService {
 
+  currentUser: string;
+
   constructor() {
+    this.currentUser = localStorage.getItem('current_user');
   }
 
   updatePasswordFormulaire(): FormGroup {
     return new FormGroup({
       'step': new FormGroup({
+        'currentUser': new FormControl(this.currentUser),
         'type': new FormControl('updatePassword'),
         'alias': new FormGroup({
           'owner': new FormControl(),
@@ -19,7 +23,7 @@ export class FormFactoryService {
           'site': new FormControl('', Validators.required)
         }),
         'user': new FormGroup({
-          'username': new FormControl(null, Validators.required),
+          'username': new FormControl(null, [Validators.required]),
           'password': new FormControl(null, Validators.required),
         })
       })
@@ -30,6 +34,7 @@ export class FormFactoryService {
     const form = new FormGroup
     ({
       'step': new FormGroup({
+        'currentUser': new FormControl(this.currentUser),
         'type': new FormControl('addGroups'),
         'alias': new FormGroup({
           'owner': new FormControl(),
@@ -48,6 +53,7 @@ export class FormFactoryService {
   createGroupFormulaire(): FormGroup {
     const form = new FormGroup({
       'step': new FormGroup({
+        'currentUser': new FormControl(this.currentUser),
         'type': new FormControl('createGroup'),
         'alias': new FormGroup({
           'owner': new FormControl(),
@@ -65,6 +71,7 @@ export class FormFactoryService {
   createUserFormulaire(): FormGroup {
     const userForm = new FormGroup({
       'step': new FormGroup({
+        'currentUser': new FormControl(this.currentUser),
         'type': new FormControl('createUser'),
         'alias': new FormGroup({
           'owner': new FormControl(),

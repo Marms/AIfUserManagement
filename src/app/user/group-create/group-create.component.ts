@@ -12,6 +12,7 @@ import {Subscription} from 'rxjs';
 })
 export class GroupCreateComponent implements OnInit, OnDestroy {
 
+  ownerChanged: Subscription;
   repoChanged: Subscription;
   siteChanged: Subscription;
   form: FormGroup;
@@ -28,12 +29,18 @@ export class GroupCreateComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initForm();
+    this.ownerChanged = this.aifSvc.ownerSubject.subscribe(
+      (s: string) => {
+        this.initForm();
+        this.form.get('step.alias.owner').setValue(s);
+      }
+    );
     this.repoChanged = this.aifSvc.repoSubject.subscribe(
       (s: string) => {
         console.log('repo changed')
 
         this.repo = s;
-        this.initForm();
+        // this.initForm();
         this.form.get('step.alias.repository').setValue(this.repo);
 
       });

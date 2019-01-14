@@ -68,4 +68,22 @@ export class UserManagementService {
       });
   }
 
+  /**
+   * Retourn une liste de logs
+   * @returns {Observable<any>}
+   */
+  getLogs() {
+    this.loaderSvc.display(true);
+    return this.http.get(this.url + '', {headers: this.header})
+      .map((response: Response) => {
+        if (response.status < 200 || response.status >= 300) {
+          this.loaderSvc.display(false);
+          throw new Error('This request has failed ' + response.status);
+        }
+        const data = response.json();
+        this.loaderSvc.display(false);
+        return data;
+      });
+  }
+
 }

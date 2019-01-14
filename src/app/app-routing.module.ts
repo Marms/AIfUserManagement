@@ -5,6 +5,8 @@ import {UserCreateComponent} from './user/user-create/user-create.component';
 import {UserEditGroupComponent} from './user/user-edit-group/user-edit-group.component';
 import {UserUpdatePasswordComponent} from './user/user-update-password/user-update-password.component';
 import {GroupCreateComponent} from './user/group-create/group-create.component';
+import {LogListComponent} from './user/log-list/log-list.component';
+import {LogsComponent} from './logs/logs.component';
 
 const routes: Routes = [
   {
@@ -17,7 +19,8 @@ const routes: Routes = [
       {path: 'user-update-password', component: UserUpdatePasswordComponent},
       {path: '**', component: UserCreateComponent}
     ]
-  }
+  },
+  {path: 'logs', component: LogsComponent}
 ];
 
 @NgModule({

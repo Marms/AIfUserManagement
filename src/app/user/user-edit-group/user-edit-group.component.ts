@@ -24,6 +24,7 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
 
   site: string;
 
+  ownerChanged: Subscription;
   repoChanged: Subscription;
   siteChanged: Subscription;
   stepSubmited: Subscription;
@@ -43,6 +44,12 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
     this.initForm();
     this.initVar();
 
+    this.ownerChanged = this.aifSvc.ownerSubject.subscribe(
+      (s: string) => {
+        this.initForm();
+        this.userForm.get('step.alias.owner').setValue(s);
+      }
+    );
     this.repoChanged = this.aifSvc.repoSubject.subscribe(
       (s: string) => {
         this.repo = s;
@@ -75,6 +82,7 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.ownerChanged.unsubscribe();
     this.repoChanged.unsubscribe();
     this.stepSubmited.unsubscribe();
     this.siteChanged.unsubscribe();

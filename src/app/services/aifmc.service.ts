@@ -24,7 +24,7 @@ export class AifmcService {
 
     return new Headers({
       'Content-Type': 'application/json',
-      'Authorization': localStorage.getItem('aifmctk')
+      'Authorization': localStorage.getItem('aifmctk'),
     });
 
   }

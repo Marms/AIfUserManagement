@@ -23,7 +23,6 @@ export class LogListComponent implements OnInit , OnDestroy{
       }
     );
   }
-
   ngOnDestroy() {
     this.logsSubscription.unsubscribe();
   }

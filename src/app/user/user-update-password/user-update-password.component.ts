@@ -20,6 +20,7 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
   owners: string[];
   users: UserItem[];
   disableUserOption: boolean;
+  ownerChanged: Subscription;
   repoChanged: Subscription;
   siteChanged: Subscription;
   stepSubmited: Subscription;
@@ -48,6 +49,13 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
         this.disableUserOption = false;
       }
     );
+
+    this.ownerChanged = this.aifSvc.ownerSubject.subscribe(
+      (s: string) => {
+        this.initForm();
+        this.userForm.get('step.alias.owner').setValue(s);
+      }
+    );
     this.repoChanged = this.aifSvc.repoSubject.subscribe(
       (s: string) => {
         this.repo = s;
@@ -70,6 +78,7 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.repoChanged.unsubscribe();
     this.siteChanged.unsubscribe();
+    this.ownerChanged.unsubscribe();
   }
 
 
