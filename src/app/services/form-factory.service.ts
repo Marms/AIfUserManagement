@@ -18,7 +18,7 @@ export class FormFactoryService {
         'currentUser': new FormControl(this.currentUser),
         'type': new FormControl('updatePassword'),
         'alias': new FormGroup({
-          'owner': new FormControl(),
+          'owner': new FormControl('', Validators.required),
           'repository': new FormControl('', Validators.required),
           'site': new FormControl('', Validators.required)
         }),
@@ -56,7 +56,7 @@ export class FormFactoryService {
         'currentUser': new FormControl(this.currentUser),
         'type': new FormControl('createGroup'),
         'alias': new FormGroup({
-          'owner': new FormControl(),
+          'owner': new FormControl('', Validators.required),
           'repository': new FormControl('', Validators.required),
           'site': new FormControl('', Validators.required)
         }),
@@ -74,9 +74,9 @@ export class FormFactoryService {
         'currentUser': new FormControl(this.currentUser),
         'type': new FormControl('createUser'),
         'alias': new FormGroup({
-          'owner': new FormControl(),
-          'repository': new FormControl('', Validators.required),
-          'site': new FormControl('', Validators.required)
+          'owner': new FormControl('', Validators.required),
+          'repository': new FormControl('', [Validators.required]),
+          'site': new FormControl('', [Validators.required])
         }),
         'user': new FormGroup({
           'username': new FormControl(null, Validators.required),
@@ -86,4 +86,18 @@ export class FormFactoryService {
     });
     return userForm;
   }
+
+  invalideName(control: FormControl) {
+    if (control.value === 'Please select' || control.value === null, control.value === '') {
+      console.log('vadi');
+      return {'pleaseSelect': true};
+    }
+    return {'pleaseSelect': false};
+    ;
+  }
+
+  isEmpty(res) {
+    return null === res || res === '';
+  }
+
 }

@@ -16,10 +16,12 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
   userForm: FormGroup;
 
   site: string;
+  owner: string;
   repo: string;
   owners: string[];
   users: UserItem[];
   disableUserOption: boolean;
+  enabled: boolean;
   ownerChanged: Subscription;
   repoChanged: Subscription;
   siteChanged: Subscription;
@@ -53,19 +55,25 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
     this.ownerChanged = this.aifSvc.ownerSubject.subscribe(
       (s: string) => {
         this.initForm();
+        this.owner = s;
         this.userForm.get('step.alias.owner').setValue(s);
       }
     );
     this.repoChanged = this.aifSvc.repoSubject.subscribe(
       (s: string) => {
         this.repo = s;
+        this.userForm.get('step.alias.owner').setValue(this.owner);
         this.userForm.get('step.alias.repository').setValue(this.repo);
       });
 
     this.siteChanged = this.aifSvc.siteSubject.subscribe(
       (s: string) => {
+        this.enabled = true;
         this.disableUserOption = false;
+        this.userForm.get('step.alias.owner').setValue(this.owner);
         this.userForm.get('step.alias.site').setValue(s);
+        this.userForm.get('step.alias.repository').setValue(this.repo);
+
         this.userSvc.getUser(this.repo, s).subscribe(
           (data: any) => {
             this.users = data.users;
@@ -92,6 +100,7 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
   }
 
   initVar() {
+    this.enabled = false;
     this.disableUserOption = false;
     this.userForm.reset();
   }

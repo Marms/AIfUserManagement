@@ -14,10 +14,12 @@ export class UserCreateComponent implements OnInit, OnDestroy {
 
   userForm: FormGroup;
   repo: string;
+  owner: string;
   ownerChanged: Subscription;
   repoChanged: Subscription;
   siteChanged: Subscription;
   show: boolean = false;
+  enabled: boolean = false;
 
   toggleShow(pass: any) {
     this.show = !this.show;
@@ -45,6 +47,7 @@ export class UserCreateComponent implements OnInit, OnDestroy {
     this.ownerChanged = this.aifSvc.ownerSubject.subscribe(
       (s: string) => {
         this.initForm();
+        this.owner = s;
         this.userForm.get('step.alias.owner').setValue(s);
       }
     );
@@ -53,25 +56,30 @@ export class UserCreateComponent implements OnInit, OnDestroy {
         this.repo = s;
         this.initForm();
         this.userForm.get('step.alias.repository').setValue(this.repo);
+        this.userForm.get('step.alias.owner').setValue(this.owner);
 
       });
 
     this.siteChanged = this.aifSvc.siteSubject.subscribe(
       (s: string) => {
         this.initForm();
+        this.userForm.get('step.alias.owner').setValue(this.owner);
         this.userForm.get('step.alias.repository').setValue(this.repo);
         this.userForm.get('step.alias.site').setValue(s);
+        this.enabled = true;
       });
   }
 
   // creation du formulaire
   initForm() {
+    this.enabled = false;
     this.userForm = this.formFactory.createUserFormulaire();
   }
 
   onSubmit() {
     this.userSvc.saveUser(this.userForm.value);
     this.userForm.reset();
+    this.enabled = false;
   }
 
   eyeClass() {
@@ -81,4 +89,5 @@ export class UserCreateComponent implements OnInit, OnDestroy {
       return 'fa fa-eye';
     }
   }
+
 }

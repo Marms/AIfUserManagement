@@ -10,7 +10,7 @@
     <label for="repo">Repo</label>
     <select class="form-control" id="repo"
             (change)="repoSelected($event.target.value)">
-      <option *ngIf="!disableRepoOption" selected value="">Please select owner</option>
+      <option *ngIf="!disableRepoOption" selected value="">Please select</option>
       <option *ngFor="let repo of repos" (value)="repo">{{repo}}</option>
     </select>
   </div>
@@ -19,7 +19,7 @@
     <select (change)="siteSelected($event.target.value)"
             id="site" class="form-control"
     >
-      <option *ngIf="!disableSiteOption" selected value="">Please select repo</option>
+      <option *ngIf="!disableSiteOption" selected value="">Please select</option>
       <option *ngFor="let site of sites" (value)="site"> {{site}}</option>
     </select>
   </div>

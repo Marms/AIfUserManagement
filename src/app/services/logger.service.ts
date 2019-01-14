@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import {Log} from './shared/log';
 import {Subject} from 'rxjs';
+import {UserManagementService} from './user-management.service';
 
 @Injectable()
 export class LoggerService {
@@ -20,4 +21,5 @@ export class LoggerService {
   getLogs(): Log[] {
     return this.logs.slice();
   }
+
 }

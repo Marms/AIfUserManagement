@@ -17,7 +17,8 @@ export class GroupCreateComponent implements OnInit, OnDestroy {
   siteChanged: Subscription;
   form: FormGroup;
   repo: string;
-
+  owner: string;
+  enabled: boolean = false;
 
   constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService, private formFactory: FormFactoryService) {
   }
@@ -32,23 +33,28 @@ export class GroupCreateComponent implements OnInit, OnDestroy {
     this.ownerChanged = this.aifSvc.ownerSubject.subscribe(
       (s: string) => {
         this.initForm();
+        this.owner = s;
         this.form.get('step.alias.owner').setValue(s);
       }
     );
     this.repoChanged = this.aifSvc.repoSubject.subscribe(
       (s: string) => {
-        console.log('repo changed')
+        console.log('repo changed');
 
         this.repo = s;
         // this.initForm();
+        this.form.get('step.alias.owner').setValue(this.owner);
         this.form.get('step.alias.repository').setValue(this.repo);
 
       });
 
     this.siteChanged = this.aifSvc.siteSubject.subscribe(
       (s: string) => {
-        console.log('site changed')
+        console.log('site changed');
         this.initForm();
+        this.enabled = true;
+
+        this.form.get('step.alias.owner').setValue(this.owner);
         this.form.get('step.alias.repository').setValue(this.repo);
         this.form.get('step.alias.site').setValue(s);
       });
@@ -56,11 +62,13 @@ export class GroupCreateComponent implements OnInit, OnDestroy {
 
 
   initForm() {
+    this.enabled = false;
     this.form = this.formFactory.createGroupFormulaire();
   }
 
   onSubmit() {
-    console.log(this.form.value);
     this.userSvc.saveGroup(this.form.value);
+    this.initForm();
+
   }
 }

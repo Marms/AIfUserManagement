@@ -19,8 +19,10 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   disableUserOption: boolean;
   showGroupHeader: boolean;
   repo: string;
+  owner: string;
   groups: UserItem[];
   group: string;
+  enabled: boolean = false;
 
   site: string;
 
@@ -47,6 +49,7 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
     this.ownerChanged = this.aifSvc.ownerSubject.subscribe(
       (s: string) => {
         this.initForm();
+        this.owner = s;
         this.userForm.get('step.alias.owner').setValue(s);
       }
     );
@@ -54,13 +57,16 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
       (s: string) => {
         this.repo = s;
         this.initForm();
+        this.userForm.get('step.alias.owner').setValue(this.owner);
         this.userForm.get('step.alias.repository').setValue(this.repo);
       });
 
     this.siteChanged = this.aifSvc.siteSubject.subscribe(
       (s: string) => {
         this.initForm();
+        this.enabled = true;
         this.site = s;
+        this.userForm.get('step.alias.owner').setValue(this.owner);
         this.userForm.get('step.alias.repository').setValue(this.repo);
         this.userForm.get('step.alias.site').setValue(s);
         this.userSvc.getUser(this.repo, s).subscribe(
@@ -89,6 +95,7 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   }
 
   initForm() {
+    this.enabled = false;
     this.userForm = this.formFactory.userEditFormulaire();
   }
 
@@ -117,6 +124,7 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   }
 
   initVar() {
+    this.enabled = false;
     this.group = '_DONT_ADD_';
     this.showGroupHeader = false;
     this.user = new UserItem();

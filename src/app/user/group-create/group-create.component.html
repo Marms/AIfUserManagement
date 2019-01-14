@@ -1,25 +1,27 @@
-
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <div>
     <div formGroupName="step">
       <div formGroupName="alias">
         <app-aifmc-header></app-aifmc-header>
       </div>
-      <div formGroupName="group">
-        <div class="form-group">
-          <div class="form-row">
-            <label class="control-label" for="groupname">Groupname</label>
-            <input type="text" formControlName="groupname"
-                   id="groupname"
-                   class="form-control"
-            >
+      <ng-template [ngIf]="enabled">
+        <div formGroupName="group">
+          <div class="form-group">
+            <div class="form-row">
+              <label class="control-label" for="groupname">Groupname</label>
+              <input type="text" formControlName="groupname"
+                     id="groupname"
+                     class="form-control"
+              >
+            </div>
           </div>
         </div>
-      </div>
+        <div class="form-row-align-center">
+          <button [disabled]="!form.valid" type="submit" class="btn btn-primary">Create Group</button>
+        </div>
+      </ng-template>
     </div>
   </div>
-  <div class="form-row-align-center">
-    <button [disabled]="!form.valid" type="submit" class="btn btn-primary">Create Group</button>
-  </div>
+
 
 </form>

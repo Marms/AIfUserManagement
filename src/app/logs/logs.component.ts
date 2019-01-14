@@ -13,63 +13,36 @@ import {StepResult} from '../services/shared/stepResult';
 })
 export class LogsComponent implements OnInit, OnDestroy {
 
-  logs: Log[] = [];
-  logString: string[];
+  logString: string[] = [];
   logsSubscription: Subscription;
 
   constructor(private loggerSvc: LoggerService, private userSvc: UserManagementService) {
   }
 
-  ngOnInit() {
-    this.logString = [];
-    console.log('initi');
-    this.logs = this.loggerSvc.getLogs();
-
-    this.logsSubscription = this.loggerSvc.logChanged.subscribe(
-      (data: Log[]) => {
-        console.log('log');
-        console.log(data);
-        this.logs = data.reverse();
-        for (const logg of data) {
-          this.buildMessage(logg);
-        }
-      }
-    );
-
-    for (const logg of this.loggerSvc.getLogs()) {
-      this.buildMessage(logg);
-    }
-    this.logString = [];
-    console.log('initi');
-    this.logs = this.loggerSvc.getLogs();
-
-    this.logsSubscription = this.loggerSvc.logChanged.subscribe(
-      (data: Log[]) => {
-        console.log('log');
-        console.log(data);
-        this.logs = data.reverse();
-        for (const logg of data) {
-          this.buildMessage(logg);
-        }
-      }
-    );
-
-    for (const logg of this.loggerSvc.getLogs()) {
-      this.buildMessage(logg);
-    }
-
-    const textarea: HTMLTextAreaElement = <HTMLTextAreaElement> document.getElementById('logArray');
-    textarea.value = this.logString.join('\n');
-
+  ngOnDestroy() {
   }
 
-  ngOnDestroy() {
-    this.logsSubscription.unsubscribe();
+  ngOnInit() {
+
+    /// TODO mettre websocket
+    this.userSvc.getLogs().subscribe(
+      (data: string[]) => {
+        this.logString = data;
+        console.log(this.logString);
+        for (const logg of this.loggerSvc.getLogs()) {
+          console.log(this.logString);
+          console.log(logg);
+          this.buildMessage(logg);
+        }
+        const textarea: HTMLTextAreaElement = <HTMLTextAreaElement> document.getElementById('logArray');
+        textarea.value = this.logString.join('\n');
+      }
+    );
   }
 
   buildPrefix(log: Log) {
-    console.log('bunise');
-    const message = '[' + log.results[0].date + '] [INFO] [AFSUserManager] - \'' + log.results[0].uuid + '\'' + ' id: \'' + log.step.currentUser + '\'';
+    const message = '[' + log.results[0].date + '] [INFO] [AFSUserManager] - \''
+      + log.results[0].uuid + '\'' + ' id: \'' + log.step.currentUser + '\'';
     return message;
   }
 
@@ -89,27 +62,5 @@ export class LogsComponent implements OnInit, OnDestroy {
       this.logString.push(message + '' + ' IS: \'' + res.alias + '\' status \'' + res.status + '\' ' + res.message);
     }
     return message;
-  }
-
-  /**
-   *   [ ] [INFO] [AFSUserManager] - 'UUID' User: '' Repo: '' Site: '' type demande : ''
-   *   [ ] [INFO] [AFSUserManager] - [UUID] <result>
-
-   *
-   */
-  /**
-   * Transforme les logs
-   */
-  convertResultToString(log: Log) {
-    let result = this.buildMessage(log);
-    result += log.step.type + ' ' + log.step.alias.repo + ' ' + log.step.alias.owner + '';
-  }
-
-  readLog() {
-    this.userSvc.getLogs().subscribe(
-      (data: string[]) => {
-        this.logString = data;
-      }
-    );
   }
 }

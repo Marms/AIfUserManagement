@@ -6,7 +6,9 @@
       <div formGroupName="alias">
         <app-aifmc-header></app-aifmc-header>
       </div>
-      <div formGroupName="user">
+
+      <ng-template [ngIf]="enabled">
+        <div formGroupName="user">
         <div class="form-group">
           <div class="form-row">
             <label class="control-label" for="username">Username</label>
@@ -35,6 +37,7 @@
         </div>
 
       </div>
+      </ng-template>
     </div>
   </div>
 </form>

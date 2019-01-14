@@ -74,7 +74,7 @@ export class UserManagementService {
    */
   getLogs() {
     this.loaderSvc.display(true);
-    return this.http.get(this.url + '', {headers: this.header})
+    return this.http.get( this.url + 'logs', {headers: this.header})
       .map((response: Response) => {
         if (response.status < 200 || response.status >= 300) {
           this.loaderSvc.display(false);
@@ -82,7 +82,7 @@ export class UserManagementService {
         }
         const data = response.json();
         this.loaderSvc.display(false);
-        return data;
+        return data.logs;
       });
   }
 

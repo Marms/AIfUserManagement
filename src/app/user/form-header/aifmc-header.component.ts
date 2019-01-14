@@ -78,8 +78,6 @@ export class AifmcHeaderComponent implements OnInit, OnDestroy {
   }
 
   ownerSelected(owner: string) {
-
-
     this.owner = owner;
     this.disableOwnerOption = true;
     this.aifSvc.ownerSubject.next(owner);
