@@ -161,6 +161,8 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
 
   deleteGroup(index: number) {
     const array: FormArray = (<FormArray>this.userForm.get('step.user.groups'));
+    const deletedArray: FormArray = (<FormArray>this.userForm.get('step.user.deletedGroups'));
+    deletedArray.push(array.controls[index]);
     array.removeAt(index);
     this.user.membership.splice(index, 1);
   }

@@ -43,7 +43,8 @@ export class FormFactoryService {
         }),
         'user': new FormGroup({
           'username': new FormControl(null, Validators.required),
-          'groups': new FormArray([])
+          'groups': new FormArray([]),
+          'deletedGroups': new FormArray([])
         })
       })
     });

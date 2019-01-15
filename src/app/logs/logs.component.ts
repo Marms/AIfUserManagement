@@ -28,10 +28,7 @@ export class LogsComponent implements OnInit, OnDestroy {
     this.userSvc.getLogs().subscribe(
       (data: string[]) => {
         this.logString = data;
-        console.log(this.logString);
         for (const logg of this.loggerSvc.getLogs()) {
-          console.log(this.logString);
-          console.log(logg);
           this.buildMessage(logg);
         }
         const textarea: HTMLTextAreaElement = <HTMLTextAreaElement> document.getElementById('logArray');
