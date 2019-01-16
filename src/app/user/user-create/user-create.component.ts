@@ -8,10 +8,11 @@ import {FormFactoryService} from '../../services/form-factory.service';
 
 @Component({
   selector: 'app-user-create',
-  templateUrl: './user-create.component.html'
+  templateUrl: './user-create.component.html',
+  styleUrls: ['./user-create.component.css']
 })
 export class UserCreateComponent implements OnInit, OnDestroy {
-
+aui
   userForm: FormGroup;
   repo: string;
   owner: string;
@@ -77,6 +78,7 @@ export class UserCreateComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    console.log(this.userForm.value)
     this.userSvc.saveUser(this.userForm.value);
     this.userForm.reset();
     this.enabled = false;
@@ -88,6 +90,14 @@ export class UserCreateComponent implements OnInit, OnDestroy {
     } else {
       return 'fa fa-eye';
     }
+  }
+
+  showError(controlerName: string, field: string) {
+    const control = this.userForm.get(controlerName);
+    if (control.touched && null != control.errors && control.errors[field]) {
+      return true;
+    }
+    return false;
   }
 
 }

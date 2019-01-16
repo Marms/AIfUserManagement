@@ -10,7 +10,8 @@ import {LoggerService} from '../../services/logger.service';
 
 @Component({
   selector: 'app-user-update-password',
-  templateUrl: './user-update-password.component.html'
+  templateUrl: './user-update-password.component.html',
+  styleUrls: ['./user-update-password.component.css']
 })
 export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
   userForm: FormGroup;
@@ -117,6 +118,15 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
     } else {
       return 'fa fa-eye';
     }
+  }
+
+
+  showError(controlerName: string, field: string) {
+    const control = this.userForm.get(controlerName);
+    if (control.touched && null != control.errors && control.errors[field]) {
+      return true;
+    }
+    return false;
   }
 
 }

@@ -24,7 +24,7 @@ export class FormFactoryService {
         }),
         'user': new FormGroup({
           'username': new FormControl(null, [Validators.required]),
-          'password': new FormControl(null, Validators.required),
+          'password': new FormControl(null, [Validators.required, this.whitespace]),
         })
       })
     });
@@ -62,7 +62,7 @@ export class FormFactoryService {
           'site': new FormControl('', Validators.required)
         }),
         'group': new FormGroup({
-          'groupname': new FormControl(null, Validators.required)
+          'groupname': new FormControl(null, [Validators.required, this.whitespace])
         })
       })
     });
@@ -80,25 +80,29 @@ export class FormFactoryService {
           'site': new FormControl('', [Validators.required])
         }),
         'user': new FormGroup({
-          'username': new FormControl(null, Validators.required),
-          'password': new FormControl(null, Validators.required),
+          'username': new FormControl('', [Validators.required, this.minMax, this.whitespace]),
+          'password': new FormControl(null, [Validators.required, this.whitespace]),
         })
       })
     });
     return userForm;
   }
 
-  invalideName(control: FormControl) {
-    if (control.value === 'Please select' || control.value === null, control.value === '') {
-      console.log('vadi');
-      return {'pleaseSelect': true};
+  //  Validators.pattern('/^[a-zA-Z]+$/')]]
+  minMax(control: FormControl) {
+    if ((control.value.toString().length) > 20) {
+      return {'maxLength': true};
     }
-    return {'pleaseSelect': false};
-    ;
+    return null;
   }
 
-  isEmpty(res) {
-    return null === res || res === '';
+
+  //  Validators.pattern('/^[a-zA-Z]+$/')]]
+  whitespace(control: FormControl) {
+    if ((null !== control.value) && (control.value.toString().match('.*[\' \'].*')) ) {
+      return {'whitespace': true};
+    }
+    return null;
   }
 
 }

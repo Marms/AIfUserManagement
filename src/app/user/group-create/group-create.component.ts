@@ -71,4 +71,13 @@ export class GroupCreateComponent implements OnInit, OnDestroy {
     this.initForm();
 
   }
+
+  showError(controlerName: string, field: string) {
+    const control = this.form.get(controlerName);
+    if (control.touched && null != control.errors && control.errors[field]) {
+      return true;
+    }
+    return false;
+  }
+
 }
