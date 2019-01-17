@@ -78,7 +78,6 @@ aui
   }
 
   onSubmit() {
-    console.log(this.userForm.value)
     this.userSvc.saveUser(this.userForm.value);
     this.userForm.reset();
     this.enabled = false;
@@ -99,5 +98,4 @@ aui
     }
     return false;
   }
-
 }

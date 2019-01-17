@@ -13,12 +13,11 @@ import { UserComponent } from './user/user.component';
 import {AppRoutingModule} from './app-routing.module';
 import {UserUpdatePasswordComponent} from './user/user-update-password/user-update-password.component';
 import { AifmcHeaderComponent } from './user/form-header/aifmc-header.component';
-import { LogListComponent } from './user/log-list/log-list.component';
-import { LogListItemComponent } from './user/log-list/log-list-item/log-list-item.component';
 import {LoaderService} from './services/loader.service';
 import { GroupCreateComponent } from './user/group-create/group-create.component';
 import {LoggerService} from './services/logger.service';
 import { LogsComponent } from './logs/logs.component';
+import { MessageComponent } from './message/message.component';
 
 @NgModule({
   declarations: [
@@ -29,10 +28,9 @@ import { LogsComponent } from './logs/logs.component';
     HeaderComponent,
     UserComponent,
     AifmcHeaderComponent,
-    LogListComponent,
-    LogListItemComponent,
     GroupCreateComponent,
-    LogsComponent
+    LogsComponent,
+    MessageComponent
   ],
   imports: [
     ReactiveFormsModule,

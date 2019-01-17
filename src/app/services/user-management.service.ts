@@ -24,6 +24,7 @@ export class UserManagementService {
     this.loaderSvc.display(true);
     this.http.post(this.url + 'groups', step, {headers: this.header})
       .subscribe((response: Response) => {
+        this.loggerSvc.sendOKmessage('');
         this.loggerSvc.addLog(step, response.json().results);
         this.loaderSvc.display(false);
       }, error1 => this.handleError(error1));
@@ -34,6 +35,7 @@ export class UserManagementService {
     this.loaderSvc.display(true);
     this.http.post(this.url + 'users', step, {headers: this.header})
       .subscribe((response: Response) => {
+        this.loggerSvc.sendOKmessage('');
         this.loggerSvc.addLog(step, response.json().results);
         this.loaderSvc.display(false);
       }, error1 => this.handleError(error1));
@@ -43,6 +45,7 @@ export class UserManagementService {
     this.loaderSvc.display(true);
     return this.http.get(this.url + 'users?repo=' + repos + '&site=' + site, {headers: this.header})
       .map((response: Response) => {
+        this.loggerSvc.sendOKmessage('');
         this.loaderSvc.display(false);
         const data = response.json();
         return data;
@@ -51,6 +54,7 @@ export class UserManagementService {
 
   handleError(error) {
     this.loaderSvc.display(false);
+    this.loggerSvc.sendErrorMessage(error);
     console.log(error);
   }
 
@@ -58,9 +62,10 @@ export class UserManagementService {
     this.loaderSvc.display(true);
     return this.http.get(this.url + 'groups?repo=' + repos + '&site=' + site, {headers: this.header})
       .map((response: Response) => {
+        this.loggerSvc.sendOKmessage('');
         if (response.status < 200 || response.status >= 300) {
           this.loaderSvc.display(false);
-          throw new Error('This request has failed ' + response.status);
+          this.handleError( new Error('This request has failed ' + response.status));
         }
         const data = response.json();
         this.loaderSvc.display(false);
@@ -70,20 +75,19 @@ export class UserManagementService {
 
   /**
    * Retourn une liste de logs
-   * @returns {Observable<any>}
    */
   getLogs() {
     this.loaderSvc.display(true);
     return this.http.get( this.url + 'logs', {headers: this.header})
       .map((response: Response) => {
+        this.loggerSvc.sendOKmessage('');
         if (response.status < 200 || response.status >= 300) {
           this.loaderSvc.display(false);
-          throw new Error('This request has failed ' + response.status);
+          this.handleError( new Error('This request has failed ' + response.status));
         }
         const data = response.json();
         this.loaderSvc.display(false);
         return data.logs;
       });
   }
-
 }

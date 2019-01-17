@@ -4,6 +4,7 @@ import 'rxjs/Rx';
 import {environment} from '../../environments/environment';
 import {Subject} from 'rxjs/Subject';
 import {LoaderService} from './loader.service';
+import {LoggerService} from './logger.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class AifmcService {
   repoSubject: Subject<string> = new Subject<string>();
   siteSubject: Subject<string> = new Subject<string>();
 
-  constructor(private http: Http, private loaderSvc: LoaderService) {
+  constructor(private http: Http, private loaderSvc: LoaderService, private loggerSvc: LoggerService) {
     this.url = environment.aifmcUrl + '/rest/aifra/api/v1/';
   }
 
@@ -34,14 +35,17 @@ export class AifmcService {
     return this.http.get(this.url + 'owners', {headers: this.getToken()})
       .map((response: Response) => {
           this.loaderSvc.display(false);
-          return response.json();
+          this.loggerSvc.sendOKmessage('');
+        return response.json();
         }
       );
   }
 
+
   handleError(error) {
     this.loaderSvc.display(false);
-    console.log(error);
+    this.loggerSvc.sendErrorMessage(error.toString());
+      console.log(error);
   }
 
   getRepos(ownerId: string) {
@@ -49,7 +53,8 @@ export class AifmcService {
     return this.http.get(this.url + 'owners/' + ownerId + '/repos?foraction=deploy', {headers: this.getToken()})
       .map((response: Response) => {
           this.loaderSvc.display(false);
-          return response.json();
+        this.loggerSvc.sendOKmessage('');
+        return response.json();
         }
       );
   }
@@ -61,6 +66,7 @@ export class AifmcService {
       .map((response: Response) => {
         const data = response.json();
         this.loaderSvc.display(false);
+        this.loggerSvc.sendOKmessage('');
         return data;
       });
   }

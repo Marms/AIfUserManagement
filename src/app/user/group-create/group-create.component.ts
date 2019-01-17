@@ -11,7 +11,6 @@ import {Subscription} from 'rxjs';
   styleUrls: ['./group-create.component.css']
 })
 export class GroupCreateComponent implements OnInit, OnDestroy {
-
   ownerChanged: Subscription;
   repoChanged: Subscription;
   siteChanged: Subscription;
@@ -24,6 +23,7 @@ export class GroupCreateComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.ownerChanged.unsubscribe();
     this.repoChanged.unsubscribe();
     this.siteChanged.unsubscribe();
   }

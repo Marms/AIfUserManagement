@@ -27,7 +27,6 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
   repoChanged: Subscription;
   siteChanged: Subscription;
   stepSubmited: Subscription;
-
   show: boolean = false;
 
   toggleShow(pass: any) {
@@ -62,6 +61,7 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
     );
     this.repoChanged = this.aifSvc.repoSubject.subscribe(
       (s: string) => {
+        this.initForm();
         this.repo = s;
         this.userForm.get('step.alias.owner').setValue(this.owner);
         this.userForm.get('step.alias.repository').setValue(this.repo);
@@ -69,6 +69,7 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
 
     this.siteChanged = this.aifSvc.siteSubject.subscribe(
       (s: string) => {
+        this.initForm();
         this.enabled = true;
         this.disableUserOption = false;
         this.userForm.get('step.alias.owner').setValue(this.owner);
@@ -92,6 +93,7 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
 
 
   initForm() {
+    this.enabled = false;
     this.userForm = this.formFactory.updatePasswordFormulaire();
 
   }

@@ -22,7 +22,7 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   owner: string;
   groups: UserItem[];
   group: string;
-  enabled: boolean = false;
+  enabled: boolean;
 
   site: string;
 
@@ -59,7 +59,8 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
         this.initForm();
         this.userForm.get('step.alias.owner').setValue(this.owner);
         this.userForm.get('step.alias.repository').setValue(this.repo);
-      });
+      },
+    );
 
     this.siteChanged = this.aifSvc.siteSubject.subscribe(
       (s: string) => {

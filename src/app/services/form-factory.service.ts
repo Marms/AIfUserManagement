@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+import {environment} from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,10 @@ export class FormFactoryService {
   currentUser: string;
 
   constructor() {
-    this.currentUser = localStorage.getItem('current_user');
+    this.currentUser = environment.currentUser;
+    if (null !== this.currentUser) {
+      this.currentUser = this.currentUser.replace('"', '');
+    }
   }
 
   updatePasswordFormulaire(): FormGroup {
@@ -90,7 +94,7 @@ export class FormFactoryService {
 
   //  Validators.pattern('/^[a-zA-Z]+$/')]]
   minMax(control: FormControl) {
-    if ((control.value.toString().length) > 20) {
+    if ((null != control.value) && (control.value.toString().length) > 20) {
       return {'maxLength': true};
     }
     return null;
@@ -99,7 +103,7 @@ export class FormFactoryService {
 
   //  Validators.pattern('/^[a-zA-Z]+$/')]]
   whitespace(control: FormControl) {
-    if ((null !== control.value) && (control.value.toString().match('.*[\' \'].*')) ) {
+    if ((null !== control.value) && (control.value.toString().match('.*[\' \'].*'))) {
       return {'whitespace': true};
     }
     return null;
