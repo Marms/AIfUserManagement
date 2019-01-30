@@ -16,11 +16,11 @@ const routes: Routes = [
       {path: 'user-create', component: UserCreateComponent},
       {path: 'user-edit-group', component: UserEditGroupComponent},
       {path: 'user-update-password', component: UserUpdatePasswordComponent},
-      {path: '**', component: UserCreateComponent}
+      {path: '**', component: UserComponent}
     ]
   },
   {path: 'logs', component: LogsComponent},
-  {path: '**', component: UserCreateComponent}
+  {path: '**', component: UserComponent}
 ];
 
 @NgModule({

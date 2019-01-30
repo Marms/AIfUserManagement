@@ -48,6 +48,12 @@ export class UserManagementService {
         this.loggerSvc.sendOKmessage('');
         this.loaderSvc.display(false);
         const data = response.json();
+        data.users = data.users.map(u => {
+          if (u.membership === undefined) {
+            u.membership = [];
+          }
+          return u;
+        });
         return data;
       });
   }
@@ -65,7 +71,7 @@ export class UserManagementService {
         this.loggerSvc.sendOKmessage('');
         if (response.status < 200 || response.status >= 300) {
           this.loaderSvc.display(false);
-          this.handleError( new Error('This request has failed ' + response.status));
+          this.handleError(new Error('This request has failed ' + response.status));
         }
         const data = response.json();
         this.loaderSvc.display(false);
@@ -78,12 +84,12 @@ export class UserManagementService {
    */
   getLogs() {
     this.loaderSvc.display(true);
-    return this.http.get( this.url + 'logs', {headers: this.header})
+    return this.http.get(this.url + 'logs', {headers: this.header})
       .map((response: Response) => {
         this.loggerSvc.sendOKmessage('');
         if (response.status < 200 || response.status >= 300) {
           this.loaderSvc.display(false);
-          this.handleError( new Error('This request has failed ' + response.status));
+          this.handleError(new Error('This request has failed ' + response.status));
         }
         const data = response.json();
         this.loaderSvc.display(false);

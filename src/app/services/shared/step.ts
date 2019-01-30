@@ -12,6 +12,7 @@ export class Step {
   user: {
     username: string;
     groups: string[];
+    deletedGroups: string[];
   };
   group: {
     groupname: string;

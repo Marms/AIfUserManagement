@@ -12,7 +12,7 @@ export class FormFactoryService {
   constructor() {
     this.currentUser = environment.currentUser;
     if (null !== this.currentUser) {
-      this.currentUser = this.currentUser.replace('"', '');
+      this.currentUser = this.currentUser.replace(new RegExp('"', 'g'), '');
     }
   }
 

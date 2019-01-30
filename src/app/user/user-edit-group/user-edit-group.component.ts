@@ -7,6 +7,7 @@ import {UserItem} from '../../services/shared/userItem';
 import {Subscription} from 'rxjs';
 import {FormFactoryService} from '../../services/form-factory.service';
 import {LoggerService} from '../../services/logger.service';
+import {Step} from '../../services/shared/step';
 
 @Component({
   selector: 'app-user-edit-group',
@@ -15,16 +16,15 @@ import {LoggerService} from '../../services/logger.service';
 export class UserEditGroupComponent implements OnInit, OnDestroy {
   userForm: FormGroup;
   users: UserItem[];
-  user: UserItem;
+  selectedUser: UserItem;
   disableUserOption: boolean;
   showGroupHeader: boolean;
   repo: string;
   owner: string;
-  groups: UserItem[];
-  group: string;
-  enabled: boolean;
-
   site: string;
+  groups: UserItem[];
+  selectedGroup: string;
+  showForm: boolean;
 
   ownerChanged: Subscription;
   repoChanged: Subscription;
@@ -65,7 +65,10 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
     this.siteChanged = this.aifSvc.siteSubject.subscribe(
       (s: string) => {
         this.initForm();
-        this.enabled = true;
+        this.showForm = true;
+        this.disableUserOption = false;
+        this.showGroupHeader = false;
+
         this.site = s;
         this.userForm.get('step.alias.owner').setValue(this.owner);
         this.userForm.get('step.alias.repository').setValue(this.repo);
@@ -74,7 +77,8 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
           (data: any) => {
 
             this.users = data.users;
-          },
+            this.selectedUser = new UserItem();
+            },
           error1 => this.userSvc.handleError(error1)
         );
 
@@ -96,23 +100,39 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   }
 
   initForm() {
-    this.enabled = false;
+    this.showForm = false;
     this.userForm = this.formFactory.userEditFormulaire();
+  }
+
+  nullArray(array) {
+    return array === undefined || array === null || array.length === 0;
   }
 
   removeAllGroup() {
     const array = <FormArray> this.userForm.get('step.user.groups');
-    while (array.length !== 0) {
-      array.removeAt(0);
+    if (!this.nullArray(array)) {
+      while (array.length !== 0) {
+        array.removeAt(0);
+      }
+    }
+    const deletedArray = <FormArray> this.userForm.get('step.user.deletedGroups');
+    if (!this.nullArray(deletedArray)) {
+      while (deletedArray.length !== 0) {
+        deletedArray.removeAt(0);
+      }
     }
   }
 
   userSelected(username: string) {
+    this.showGroupHeader = true;
+
+    this.resetGroup();
     this.disableUserOption = true;
+
     this.removeAllGroup();
     for (const user of this.users) {
-      if (username === user.name && user.membership != null) {
-        this.user = user;
+      if (username === user.name) {
+        this.selectedUser = user;
         for (const group of user.membership) {
           const control = new FormControl();
           control.patchValue(group);
@@ -121,26 +141,32 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
         }
       }
     }
-    this.showGroupHeader = true;
   }
 
   initVar() {
-    this.enabled = false;
-    this.group = '_DONT_ADD_';
+    this.showForm = false;
+    this.selectedGroup = '_DONT_ADD_';
     this.showGroupHeader = false;
-    this.user = new UserItem();
-    this.user.membership = [];
+    this.selectedUser = new UserItem();
+    this.selectedUser.membership = [];
     this.disableUserOption = false;
     this.userForm.reset();
-    const array: FormArray = (<FormArray> this.userForm.get('step.user.groups'));
-    while (array.length !== 0) {
-      array.removeAt(0);
-    }
+    this.removeAllGroup();
     this.userForm.reset();
   }
 
   onSubmit() {
-    this.userSvc.saveUser(this.userForm.value);
+    const value = this.userForm.value;
+    const res: Step = value.step;
+    if (null !== res.user.deletedGroups) {
+      res.user.deletedGroups = res.user.deletedGroups.filter(
+        s => {
+          const arr = res.user.groups.find(g => g === s);
+          return undefined === arr;
+        }
+      );
+    }
+    this.userSvc.saveUser(value);
     this.initVar();
   }
 
@@ -149,37 +175,45 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   }
 
   addOneGroup() {
-    if (this.group !== '_DONT_ADD_') {
-      console.log(this.group);
+    if (this.selectedGroup !== '_DONT_ADD_') {
       const array: FormArray = (<FormArray>this.userForm.get('step.user.groups'));
-      array.push(new FormControl(this.group, Validators.required));
-      this.user.membership.push(this.group);
-      const selectTags: HTMLSelectElement = (<HTMLSelectElement> document.getElementById('selectGroup'));
-      selectTags.selectedIndex = 0;
-      this.group = '_DONT_ADD_';
+      array.push(new FormControl(this.selectedGroup, Validators.required));
+      this.selectedUser.membership.push(this.selectedGroup);
+      this.resetGroup();
     }
   }
 
+  resetGroup() {
+    const selectTags: HTMLSelectElement = (<HTMLSelectElement> document.getElementById('selectGroup'));
+    if (null !==  selectTags) {
+      selectTags.selectedIndex = 0;
+    }
+    this.selectedGroup = '_DONT_ADD_';
+  }
   deleteGroup(index: number) {
     const array: FormArray = (<FormArray>this.userForm.get('step.user.groups'));
     const deletedArray: FormArray = (<FormArray>this.userForm.get('step.user.deletedGroups'));
     deletedArray.push(array.controls[index]);
+
     array.removeAt(index);
-    this.user.membership.splice(index, 1);
+    this.selectedUser.membership.splice(index, 1);
   }
 
   groupSelected(group: string) {
-    this.group = group;
+    this.selectedGroup = group;
   }
 
   /***
-   * Parcourt des group et retirer les groupes déjà présent dans l'utilisateur
+   * Parcourt des groups et retirer ceux déjà présent dans l'utilisateur
    */
   getFilteredGroup(): string[] {
-    const array: string[] = [];
-    for (const gg of this.groups) {
+    const array2 = this.groups.filter(group => {
+      return undefined === this.selectedUser.membership.find(member => member === group.name);
+    });
+    return array2.map(item => item.name);
+    /* for (const gg of this.groups) {
       let trouve = false;
-      for (const s of this.user.membership) {
+      for (const s of this.selectedUser.membership) {
         if (gg.name === s) {
           trouve = true;
         }
@@ -188,6 +222,6 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
         array.push(gg.name);
       }
     }
-    return array;
+    return array; */
   }
 }
