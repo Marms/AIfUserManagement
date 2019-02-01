@@ -4,6 +4,7 @@ import {UserManagementService} from '../../services/user-management.service';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {FormFactoryService} from '../../services/form-factory.service';
 import {Subscription} from 'rxjs';
+import {Utils} from '../shared/utils';
 
 @Component({
   selector: 'app-group-create',
@@ -14,10 +15,11 @@ export class GroupCreateComponent implements OnInit, OnDestroy {
   ownerChanged: Subscription;
   repoChanged: Subscription;
   siteChanged: Subscription;
+
   form: FormGroup;
   repo: string;
   owner: string;
-  enabled: boolean = false;
+  showForm: boolean = false;
 
   constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService, private formFactory: FormFactoryService) {
   }
@@ -34,35 +36,25 @@ export class GroupCreateComponent implements OnInit, OnDestroy {
       (s: string) => {
         this.initForm();
         this.owner = s;
-        this.form.get('step.alias.owner').setValue(s);
+        Utils.setOwner(this.form, this.owner);
       }
     );
     this.repoChanged = this.aifSvc.repoSubject.subscribe(
       (s: string) => {
-        console.log('repo changed');
-
         this.repo = s;
-        // this.initForm();
-        this.form.get('step.alias.owner').setValue(this.owner);
-        this.form.get('step.alias.repository').setValue(this.repo);
-
+        Utils.setRepo(this.form, this.owner, this.repo);
       });
 
     this.siteChanged = this.aifSvc.siteSubject.subscribe(
       (s: string) => {
-        console.log('site changed');
         this.initForm();
-        this.enabled = true;
-
-        this.form.get('step.alias.owner').setValue(this.owner);
-        this.form.get('step.alias.repository').setValue(this.repo);
-        this.form.get('step.alias.site').setValue(s);
+        Utils.setSite(this.form, this.owner, this.repo, s);
+        this.showForm = true;
       });
   }
 
-
   initForm() {
-    this.enabled = false;
+    this.showForm = false;
     this.form = this.formFactory.createGroupFormulaire();
   }
 

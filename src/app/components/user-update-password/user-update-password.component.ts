@@ -7,6 +7,7 @@ import {UserItem} from '../../services/shared/userItem';
 import {Subscription} from 'rxjs';
 import {FormFactoryService} from '../../services/form-factory.service';
 import {LoggerService} from '../../services/logger.service';
+import {Utils} from '../shared/utils';
 
 @Component({
   selector: 'app-user-update-password',
@@ -14,30 +15,23 @@ import {LoggerService} from '../../services/logger.service';
   styleUrls: ['./user-update-password.component.css']
 })
 export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
+
   userForm: FormGroup;
+  users: UserItem[];
+
+  ownerChanged: Subscription;
+  repoChanged: Subscription;
+  siteChanged: Subscription;
+  stepSubmited: Subscription;
 
   site: string;
   owner: string;
   repo: string;
   owners: string[];
-  users: UserItem[];
-  disableUserOption: boolean;
-  enabled: boolean;
-  ownerChanged: Subscription;
-  repoChanged: Subscription;
-  siteChanged: Subscription;
-  stepSubmited: Subscription;
-  show: boolean = false;
 
-  toggleShow(pass: any) {
-    this.show = !this.show;
-    console.log(pass);
-    if (this.show) {
-      pass.type = 'text';
-    } else {
-      pass.type = 'password';
-    }
-  }
+  showForm: boolean;
+  showPassword: boolean = false;
+  showPleaseSelectOption: boolean;
 
   constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService
     , private formFactory: FormFactoryService, private  loggerSvc: LoggerService) {
@@ -45,38 +39,35 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initForm();
-    this.stepSubmited = this.loggerSvc.logChanged.subscribe(
+    this.stepSubmited = this.userSvc.stepSubmited.subscribe(
       () => {
         this.users = [];
-        this.disableUserOption = false;
+        this.showPleaseSelectOption = false;
       }
     );
 
     this.ownerChanged = this.aifSvc.ownerSubject.subscribe(
-      (s: string) => {
+      (owner: string) => {
         this.initForm();
-        this.owner = s;
-        this.userForm.get('step.alias.owner').setValue(s);
+        this.owner = owner;
+        Utils.setOwner(this.userForm, this.owner);
       }
     );
     this.repoChanged = this.aifSvc.repoSubject.subscribe(
-      (s: string) => {
+      (repo: string) => {
         this.initForm();
-        this.repo = s;
-        this.userForm.get('step.alias.owner').setValue(this.owner);
-        this.userForm.get('step.alias.repository').setValue(this.repo);
+        this.repo = repo;
+        Utils.setRepo(this.userForm, this.owner, this.repo);
       });
 
     this.siteChanged = this.aifSvc.siteSubject.subscribe(
-      (s: string) => {
+      (site: string) => {
         this.initForm();
-        this.enabled = true;
-        this.disableUserOption = false;
-        this.userForm.get('step.alias.owner').setValue(this.owner);
-        this.userForm.get('step.alias.site').setValue(s);
-        this.userForm.get('step.alias.repository').setValue(this.repo);
+        this.showForm = true;
+        this.showPleaseSelectOption = false;
+        Utils.setSite(this.userForm, this.owner, this.repo, site);
 
-        this.userSvc.getUser(this.repo, s).subscribe(
+        this.userSvc.getUser(this.repo, site).subscribe(
           (data: any) => {
             this.users = data.users;
           },
@@ -93,18 +84,14 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
 
 
   initForm() {
-    this.enabled = false;
+    this.showForm = false;
     this.userForm = this.formFactory.updatePasswordFormulaire();
 
   }
 
-  userSelected(username: string) {
-    this.disableUserOption = true;
-  }
-
   initVar() {
-    this.enabled = false;
-    this.disableUserOption = false;
+    this.showForm = false;
+    this.showPleaseSelectOption = false;
     this.userForm.reset();
   }
 
@@ -114,21 +101,29 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
     this.initVar();
   }
 
+  toggleShowPassword(pass: any) {
+    this.showPassword = !this.showPassword;
+    console.log(pass);
+    if (this.showPassword) {
+      pass.type = 'text';
+    } else {
+      pass.type = 'password';
+    }
+  }
+
   eyeClass() {
-    if (this.show) {
+    if (this.showPassword) {
       return 'fa fa-eye-slash';
     } else {
       return 'fa fa-eye';
     }
   }
 
-
-  showError(controlerName: string, field: string) {
+  showErrorHelpBlock(controlerName: string, field: string) {
     const control = this.userForm.get(controlerName);
     if (control.touched && null != control.errors && control.errors[field]) {
       return true;
     }
     return false;
   }
-
 }

@@ -1,11 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
-import {UserItem} from '../../services/shared/userItem';
-import {AifmcService} from '../../services/aifmc.service';
-import {Subject} from 'rxjs/Subject';
+import {AifmcService} from '../../../services/aifmc.service';
 import {Subscription} from 'rxjs';
-import {UserManagementService} from '../../services/user-management.service';
-import {LoggerService} from '../../services/logger.service';
+import {UserManagementService} from '../../../services/user-management.service';
+import {LoggerService} from '../../../services/logger.service';
 
 @Component({
   selector: 'app-aifmc-header',
@@ -25,7 +22,6 @@ export class AifmcHeaderComponent implements OnInit, OnDestroy {
   stepSubmit: Subscription;
   ownerChanged: Subscription;
   repoChanged: Subscription;
-  siteChanged: Subscription;
 
   constructor(private aifSvc: AifmcService,
               private userSvc: UserManagementService,
@@ -36,7 +32,6 @@ export class AifmcHeaderComponent implements OnInit, OnDestroy {
     this.stepSubmit.unsubscribe();
     this.ownerChanged.unsubscribe();
     this.repoChanged.unsubscribe();
-    //this.siteChanged.unsubscribe();
   }
 
   ngOnInit() {
@@ -46,7 +41,7 @@ export class AifmcHeaderComponent implements OnInit, OnDestroy {
         },
         error1 => this.aifSvc.handleError(error1));
 
-    this.stepSubmit = this.loggerSvc.logChanged.subscribe(() => {
+    this.stepSubmit = this.userSvc.stepSubmited.subscribe(() => {
       this.reset();
     });
 

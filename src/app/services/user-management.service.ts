@@ -1,9 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Http, Headers, Response} from '@angular/http';
-import {Observable, Subject} from 'rxjs';
+import { Subject} from 'rxjs';
 import {environment} from '../../environments/environment';
-import {StepResult} from './shared/stepResult';
-import {Log} from './shared/log';
 import {LoaderService} from './loader.service';
 import {LoggerService} from './logger.service';
 
@@ -12,6 +10,7 @@ import {LoggerService} from './logger.service';
 })
 export class UserManagementService {
   url: string;
+  stepSubmited = new Subject();
 
   constructor(private http: Http, private loaderSvc: LoaderService, private loggerSvc: LoggerService) {
     this.url = environment.afsUserManagerUrl + '/rest/AFSUserManager/v1/';
@@ -24,8 +23,8 @@ export class UserManagementService {
     this.loaderSvc.display(true);
     this.http.post(this.url + 'groups', step, {headers: this.header})
       .subscribe((response: Response) => {
+        this.stepSubmited.next();
         this.loggerSvc.sendOKmessage('');
-        this.loggerSvc.addLog(step, response.json().results);
         this.loaderSvc.display(false);
       }, error1 => this.handleError(error1));
   }
@@ -35,8 +34,8 @@ export class UserManagementService {
     this.loaderSvc.display(true);
     this.http.post(this.url + 'users', step, {headers: this.header})
       .subscribe((response: Response) => {
+        this.stepSubmited.next();
         this.loggerSvc.sendOKmessage('');
-        this.loggerSvc.addLog(step, response.json().results);
         this.loaderSvc.display(false);
       }, error1 => this.handleError(error1));
   }

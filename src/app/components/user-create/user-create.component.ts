@@ -3,8 +3,9 @@ import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 import {UserManagementService} from '../../services/user-management.service';
 import {AifmcService} from '../../services/aifmc.service';
 import {Subscription} from 'rxjs/Subscription';
-import {AifmcHeaderComponent} from '../form-header/aifmc-header.component';
+import {AifmcHeaderComponent} from '../shared/form-header/aifmc-header.component';
 import {FormFactoryService} from '../../services/form-factory.service';
+import {Utils} from '../shared/utils';
 
 @Component({
   selector: 'app-user-create',
@@ -19,18 +20,8 @@ aui
   ownerChanged: Subscription;
   repoChanged: Subscription;
   siteChanged: Subscription;
-  show: boolean = false;
-  enabled: boolean = false;
-
-  toggleShow(pass: any) {
-    this.show = !this.show;
-    if (this.show) {
-      pass.type = 'text';
-    } else {
-      pass.type = 'password';
-    }
-  }
-
+  showPassword: boolean = false;
+  showForm: boolean = false;
 
   constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService,
               private formFactory: FormFactoryService) {
@@ -49,42 +40,50 @@ aui
       (s: string) => {
         this.initForm();
         this.owner = s;
-        this.userForm.get('step.alias.owner').setValue(s);
+        Utils.setOwner(this.userForm, this.owner);
+
       }
     );
     this.repoChanged = this.aifSvc.repoSubject.subscribe(
       (s: string) => {
         this.repo = s;
         this.initForm();
-        this.userForm.get('step.alias.repository').setValue(this.repo);
-        this.userForm.get('step.alias.owner').setValue(this.owner);
+        Utils.setRepo(this.userForm,this.owner,this.repo);
 
       });
 
     this.siteChanged = this.aifSvc.siteSubject.subscribe(
       (s: string) => {
         this.initForm();
-        this.userForm.get('step.alias.owner').setValue(this.owner);
-        this.userForm.get('step.alias.repository').setValue(this.repo);
-        this.userForm.get('step.alias.site').setValue(s);
-        this.enabled = true;
+        Utils.setSite(this.userForm, this.owner, this.repo, s);
+
+        this.showForm = true;
       });
   }
 
   // creation du formulaire
   initForm() {
-    this.enabled = false;
+    this.showForm = false;
     this.userForm = this.formFactory.createUserFormulaire();
   }
 
   onSubmit() {
     this.userSvc.saveUser(this.userForm.value);
     this.userForm.reset();
-    this.enabled = false;
+    this.showForm = false;
+  }
+
+  toggleShowPassword(pass: any) {
+    this.showPassword = !this.showPassword;
+    if (this.showPassword) {
+      pass.type = 'text';
+    } else {
+      pass.type = 'password';
+    }
   }
 
   eyeClass() {
-    if (this.show) {
+    if (this.showPassword) {
       return 'fa fa-eye-slash';
     } else {
       return 'fa fa-eye';

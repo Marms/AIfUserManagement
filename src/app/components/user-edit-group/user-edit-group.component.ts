@@ -8,6 +8,7 @@ import {Subscription} from 'rxjs';
 import {FormFactoryService} from '../../services/form-factory.service';
 import {LoggerService} from '../../services/logger.service';
 import {Step} from '../../services/shared/step';
+import {Utils} from '../shared/utils';
 
 @Component({
   selector: 'app-user-edit-group',
@@ -15,16 +16,19 @@ import {Step} from '../../services/shared/step';
 })
 export class UserEditGroupComponent implements OnInit, OnDestroy {
   userForm: FormGroup;
+
   users: UserItem[];
+  groups: UserItem[];
   selectedUser: UserItem;
-  disableUserOption: boolean;
-  showGroupHeader: boolean;
+
   repo: string;
   owner: string;
   site: string;
-  groups: UserItem[];
   selectedGroup: string;
+
   showForm: boolean;
+  disableUserOption: boolean;
+  showGroupHeader: boolean;
 
   ownerChanged: Subscription;
   repoChanged: Subscription;
@@ -37,12 +41,15 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
               private loggerSvc: LoggerService) {
   }
 
+  ngOnDestroy() {
+    this.ownerChanged.unsubscribe();
+    this.repoChanged.unsubscribe();
+    this.stepSubmited.unsubscribe();
+    this.siteChanged.unsubscribe();
+  }
+
   ngOnInit() {
 
-    this.stepSubmited = this.loggerSvc.logChanged.subscribe(() => {
-      this.users = [];
-      this.disableUserOption = false;
-    });
     this.initForm();
     this.initVar();
 
@@ -50,15 +57,15 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
       (s: string) => {
         this.initForm();
         this.owner = s;
-        this.userForm.get('step.alias.owner').setValue(s);
+        Utils.setOwner(this.userForm, this.owner);
       }
     );
+
     this.repoChanged = this.aifSvc.repoSubject.subscribe(
       (s: string) => {
         this.repo = s;
         this.initForm();
-        this.userForm.get('step.alias.owner').setValue(this.owner);
-        this.userForm.get('step.alias.repository').setValue(this.repo);
+        Utils.setRepo(this.userForm, this.owner, this.repo);
       },
     );
 
@@ -68,17 +75,15 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
         this.showForm = true;
         this.disableUserOption = false;
         this.showGroupHeader = false;
-
         this.site = s;
-        this.userForm.get('step.alias.owner').setValue(this.owner);
-        this.userForm.get('step.alias.repository').setValue(this.repo);
-        this.userForm.get('step.alias.site').setValue(s);
+        Utils.setSite(this.userForm, this.owner, this.repo, this.site);
+
         this.userSvc.getUser(this.repo, s).subscribe(
           (data: any) => {
 
             this.users = data.users;
             this.selectedUser = new UserItem();
-            },
+          },
           error1 => this.userSvc.handleError(error1)
         );
 
@@ -90,13 +95,10 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
         );
 
       });
-  }
 
-  ngOnDestroy() {
-    this.ownerChanged.unsubscribe();
-    this.repoChanged.unsubscribe();
-    this.stepSubmited.unsubscribe();
-    this.siteChanged.unsubscribe();
+    this.stepSubmited = this.userSvc.stepSubmited.subscribe(() => {
+      this.disableUserOption = false;
+    });
   }
 
   initForm() {
@@ -104,32 +106,28 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
     this.userForm = this.formFactory.userEditFormulaire();
   }
 
-  nullArray(array) {
-    return array === undefined || array === null || array.length === 0;
-  }
-
-  removeAllGroup() {
-    const array = <FormArray> this.userForm.get('step.user.groups');
-    if (!this.nullArray(array)) {
-      while (array.length !== 0) {
-        array.removeAt(0);
-      }
-    }
-    const deletedArray = <FormArray> this.userForm.get('step.user.deletedGroups');
-    if (!this.nullArray(deletedArray)) {
-      while (deletedArray.length !== 0) {
-        deletedArray.removeAt(0);
-      }
-    }
+  initVar() {
+    this.showForm = false;
+    this.selectedGroup = '_DONT_ADD_';
+    this.showGroupHeader = false;
+    this.selectedUser = new UserItem();
+    this.selectedUser.membership = [];
+    this.disableUserOption = false;
+    this.removeAllGroup();
+    this.userForm.reset();
   }
 
   userSelected(username: string) {
     this.showGroupHeader = true;
 
-    this.resetGroup();
+    this.resetSelectGroup();
     this.disableUserOption = true;
 
     this.removeAllGroup();
+    this.addAllMemberShipToGroups(username);
+  }
+
+  private addAllMemberShipToGroups(username: string) {
     for (const user of this.users) {
       if (username === user.name) {
         this.selectedUser = user;
@@ -143,22 +141,37 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
     }
   }
 
-  initVar() {
-    this.showForm = false;
-    this.selectedGroup = '_DONT_ADD_';
-    this.showGroupHeader = false;
-    this.selectedUser = new UserItem();
-    this.selectedUser.membership = [];
-    this.disableUserOption = false;
-    this.userForm.reset();
-    this.removeAllGroup();
-    this.userForm.reset();
+  removeAllGroup() {
+    const array = <FormArray> this.userForm.get('step.user.groups');
+    if (!this.isNullArray(array)) {
+      while (array.length !== 0) {
+        array.removeAt(0);
+      }
+    }
+    const deletedArray = <FormArray> this.userForm.get('step.user.deletedGroups');
+    if (!this.isNullArray(deletedArray)) {
+      while (deletedArray.length !== 0) {
+        deletedArray.removeAt(0);
+      }
+    }
+  }
+
+  isNullArray(array) {
+    return array === undefined || array === null || array.length === 0;
   }
 
   onSubmit() {
-    const value = this.userForm.value;
+    const value = this.cleanDeletedGroup(this.userForm.value);
+    this.userSvc.saveUser(value);
+    this.initVar();
+  }
+
+  /**
+   * Si un group a été supprimé puis rajouté il est présent dans les deux listes (groups, deletedGroups)
+   */
+  private cleanDeletedGroup(value) {
     const res: Step = value.step;
-    if (null !== res.user.deletedGroups) {
+    if (null !== res.user.deletedGroups) { // gestion cas : group supprime puis rajoute
       res.user.deletedGroups = res.user.deletedGroups.filter(
         s => {
           const arr = res.user.groups.find(g => g === s);
@@ -166,12 +179,15 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
         }
       );
     }
-    this.userSvc.saveUser(value);
-    this.initVar();
+    return value;
   }
 
-  getGroups(): AbstractControl[] {
+  getGroups(): AbstractControl[] { // impossible d effectuer cette action dans le template
     return (<FormArray>this.userForm.get('step.user.groups')).controls;
+  }
+
+  groupSelected(group: string) {
+    this.selectedGroup = group;
   }
 
   addOneGroup() {
@@ -179,18 +195,19 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
       const array: FormArray = (<FormArray>this.userForm.get('step.user.groups'));
       array.push(new FormControl(this.selectedGroup, Validators.required));
       this.selectedUser.membership.push(this.selectedGroup);
-      this.resetGroup();
+      this.resetSelectGroup();
     }
   }
 
-  resetGroup() {
-    const selectTags: HTMLSelectElement = (<HTMLSelectElement> document.getElementById('selectGroup'));
-    if (null !==  selectTags) {
-      selectTags.selectedIndex = 0;
+  resetSelectGroup() {
+    const selectElement: HTMLSelectElement = (<HTMLSelectElement> document.getElementById('selectGroup'));
+    if (null !== selectElement) {
+      selectElement.selectedIndex = 0;
     }
     this.selectedGroup = '_DONT_ADD_';
   }
-  deleteGroup(index: number) {
+
+  addOneDeletedGroup(index: number) {
     const array: FormArray = (<FormArray>this.userForm.get('step.user.groups'));
     const deletedArray: FormArray = (<FormArray>this.userForm.get('step.user.deletedGroups'));
     deletedArray.push(array.controls[index]);
@@ -199,29 +216,15 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
     this.selectedUser.membership.splice(index, 1);
   }
 
-  groupSelected(group: string) {
-    this.selectedGroup = group;
-  }
-
   /***
-   * Parcourt des groups et retirer ceux déjà présent dans l'utilisateur
+   * Ne pas afficher les groups déjà contenu dans l'utilisateur
    */
   getFilteredGroup(): string[] {
     const array2 = this.groups.filter(group => {
       return undefined === this.selectedUser.membership.find(member => member === group.name);
     });
     return array2.map(item => item.name);
-    /* for (const gg of this.groups) {
-      let trouve = false;
-      for (const s of this.selectedUser.membership) {
-        if (gg.name === s) {
-          trouve = true;
-        }
-      }
-      if (!trouve) {
-        array.push(gg.name);
-      }
-    }
-    return array; */
   }
+
+
 }

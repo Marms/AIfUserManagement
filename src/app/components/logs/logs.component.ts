@@ -1,10 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {LoggerService} from '../services/logger.service';
-import {UserManagementService} from '../services/user-management.service';
-import {Log} from '../services/shared/log';
-import {Subscription} from 'rxjs';
-import {Step} from '../services/shared/step';
-import {StepResult} from '../services/shared/stepResult';
+import {UserManagementService} from '../../services/user-management.service';
 
 @Component({
   selector: 'app-logs',
@@ -15,7 +10,7 @@ export class LogsComponent implements OnInit, OnDestroy {
 
   logString: string[] = [];
 
-  constructor(private loggerSvc: LoggerService, private userSvc: UserManagementService) {
+  constructor(private userSvc: UserManagementService) {
   }
 
   ngOnDestroy() {

@@ -1,8 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {UserManagementService} from '../services/user-management.service';
 import {Subscription} from 'rxjs/Subscription';
-import {AifmcService} from '../services/aifmc.service';
-import {LoggerService} from '../services/logger.service';
+import {LoggerService} from '../../../services/logger.service';
 
 @Component({
   selector: 'app-message',

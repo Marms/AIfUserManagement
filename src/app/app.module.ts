@@ -6,18 +6,18 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {UserManagementService} from './services/user-management.service';
 import {HttpModule} from '@angular/http';
 import {AifmcService} from './services/aifmc.service';
-import { UserEditGroupComponent } from './user/user-edit-group/user-edit-group.component';
-import { UserCreateComponent } from './user/user-create/user-create.component';
+import { UserEditGroupComponent } from './components/user-edit-group/user-edit-group.component';
+import { UserCreateComponent } from './components/user-create/user-create.component';
 import { HeaderComponent } from './header/header.component';
-import { UserComponent } from './user/user.component';
+import { BaseComponent } from './components/base.component';
 import {AppRoutingModule} from './app-routing.module';
-import {UserUpdatePasswordComponent} from './user/user-update-password/user-update-password.component';
-import { AifmcHeaderComponent } from './user/form-header/aifmc-header.component';
+import {UserUpdatePasswordComponent} from './components/user-update-password/user-update-password.component';
+import { AifmcHeaderComponent } from './components/shared/form-header/aifmc-header.component';
 import {LoaderService} from './services/loader.service';
-import { GroupCreateComponent } from './user/group-create/group-create.component';
+import { GroupCreateComponent } from './components/group-create/group-create.component';
 import {LoggerService} from './services/logger.service';
-import { LogsComponent } from './logs/logs.component';
-import { MessageComponent } from './message/message.component';
+import { LogsComponent } from './components/logs/logs.component';
+import { MessageComponent } from './components/shared/message/message.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +26,7 @@ import { MessageComponent } from './message/message.component';
     UserCreateComponent,
     UserUpdatePasswordComponent,
     HeaderComponent,
-    UserComponent,
+    BaseComponent,
     AifmcHeaderComponent,
     GroupCreateComponent,
     LogsComponent,

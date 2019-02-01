@@ -1,20 +1,26 @@
 <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+
   <div>
     <div formGroupName="step">
       <div formGroupName="alias">
         <app-aifmc-header></app-aifmc-header>
       </div>
-      <ng-template [ngIf]="enabled">
 
+      <ng-template [ngIf]="showForm">
         <div formGroupName="user">
           <div class="form-group">
             <div class="form-row">
               <label class="control-label" for="username">Username</label>
-              <select class="form-control" id="username" formControlName="username"
-                      (change)="userSelected($event.target.value)">
-                <option *ngIf="!disableUserOption" value="">Please select Site</option>
-                <option *ngFor="let user of users" (value)="user.name">{{user.name}}</option>
-              </select>
+              <input type="text" formControlName="username"
+                     id="username"
+                     class="form-control"
+              >
+              <span class="help-block"
+                    *ngIf="showError('step.user.username','maxLength')">Max length authorized: 20</span>
+              <span class="help-block" *ngIf="showError('step.user.username','required')">Field required</span>
+              <span class="help-block"
+                    *ngIf="showError('step.user.username','whitespace')">White space not allowed</span>
+
             </div>
           </div>
           <div class="form-group">
@@ -24,26 +30,25 @@
                 <input type="password" formControlName="password" #pass
                        id="password"
                        class="form-control"
-
                 >
                 <div class="input-group-addon">
-                  <a (click)="toggleShow(pass)"><i [ngClass]="eyeClass()" aria-hidden="true"></i></a>
+                  <a (click)="toggleShowPassword(pass)"><i [ngClass]="eyeClass()" aria-hidden="true"></i></a>
                 </div>
               </div>
-              <span class="help-block" *ngIf="showError('step.user.password', 'required')">Field required</span>
+              <span class="help-block" *ngIf="null != userForm.get('step.user.password').errors &&
+            showError('step.user.password', 'required')">Field required</span>
               <span class="help-block"
                     *ngIf="showError('step.user.password','whitespace')">White space not allowed</span>
-
 
             </div>
           </div>
           <div class="form-row-align-center">
-            <button [disabled]="!userForm.valid" type="submit" class="btn btn-primary">Update password</button>
+            <button [disabled]="!userForm.valid" type="submit" class="btn btn-primary">Create User</button>
           </div>
+
         </div>
       </ng-template>
     </div>
   </div>
 </form>
 <app-message></app-message>
-
