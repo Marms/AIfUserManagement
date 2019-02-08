@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
 import {Http, Headers, Response} from '@angular/http';
-import { Subject} from 'rxjs';
+import {Subject} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {LoaderService} from './loader.service';
 import {LoggerService} from './logger.service';
+import {Result} from './shared/result';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +25,7 @@ export class UserManagementService {
     this.http.post(this.url + 'groups', step, {headers: this.header})
       .subscribe((response: Response) => {
         this.stepSubmited.next();
-        this.loggerSvc.sendOKmessage('');
+        this.manageResult(response.json().results)
         this.loaderSvc.display(false);
       }, error1 => this.handleError(error1));
   }
@@ -32,17 +33,17 @@ export class UserManagementService {
   saveUser(step: any) {
     console.log(step);
     this.loaderSvc.display(true);
-    this.http.post(this.url + 'users', step, {headers: this.header})
+    this.http.post(this.url + 'user', step, {headers: this.header})
       .subscribe((response: Response) => {
         this.stepSubmited.next();
-        this.loggerSvc.sendOKmessage('');
+        this.manageResult(response.json().results)
         this.loaderSvc.display(false);
       }, error1 => this.handleError(error1));
   }
 
   getUser(repos: string, site: string) {
     this.loaderSvc.display(true);
-    return this.http.get(this.url + 'users?repo=' + repos + '&site=' + site, {headers: this.header})
+    return this.http.get(this.url + 'user?repo=' + repos + '&site=' + site, {headers: this.header})
       .map((response: Response) => {
         this.loggerSvc.sendOKmessage('');
         this.loaderSvc.display(false);
@@ -94,5 +95,20 @@ export class UserManagementService {
         this.loaderSvc.display(false);
         return data.logs;
       });
+  }
+
+  manageResult(results: Result[]) {
+    if (this.isAllStateOK(results)) {
+      this.loggerSvc.sendOKmessage('OK');
+      return;
+    }
+    this.loggerSvc.sendErrorMessage('please check LOG');
+  }
+  isAllStateOK(results: Result[]) {
+    results = results.filter(r => r.status === 'KO');
+    if (null === results || 0 === results.length) {
+      return true;
+    }
+    return false;
   }
 }
