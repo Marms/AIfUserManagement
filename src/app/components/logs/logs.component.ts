@@ -21,9 +21,17 @@ export class LogsComponent implements OnInit, OnDestroy {
     this.userSvc.getLogs().subscribe(
       (data: string[]) => {
         this.logString = data;
-        const textarea: HTMLTextAreaElement = <HTMLTextAreaElement> document.getElementById('logArray');
-        textarea.value = this.logString.join('\n');
+        this.setTextArea(this.logString);
       }, error1 => this.userSvc.handleError(error1)
     );
+  }
+
+  setTextArea(array: string[]) {
+    const textarea: HTMLTextAreaElement = <HTMLTextAreaElement> document.getElementById('logArray');
+    textarea.value = array.join('\n');
+  }
+
+  reverse() {
+    this.setTextArea(this.logString.reverse());
   }
 }

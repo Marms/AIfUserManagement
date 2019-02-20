@@ -55,6 +55,11 @@ export class AifmcHeaderComponent implements OnInit, OnDestroy {
       this.aifSvc.getRepos(s)
         .subscribe((data: any) => {
           this.repos = data.repositories;
+          for (var i = this.repos.length - 1; i >= 0; i--) {
+            if (this.repos[i] === 'ATS_RUN_97') {
+              this.repos.splice(i, 1);
+            }
+          }
         }, error1 => {
           this.aifSvc.handleError(error1);
         });
