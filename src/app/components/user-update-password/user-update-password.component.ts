@@ -28,6 +28,7 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
   owner: string;
   repo: string;
   owners: string[];
+  user: string;
 
   showForm: boolean;
   showPassword: boolean = false;
@@ -98,6 +99,7 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
 
   initVar() {
     this.showForm = false;
+    this.user = '';
     this.showPleaseSelectOption = false;
     this.userForm.reset();
   }
@@ -105,6 +107,8 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
   onSubmit() {
     this.userSvc.saveUser(this.userForm.value);
     this.initVar();
+    this.modalRef.hide();
+
   }
 
   toggleShowPassword(pass: any) {
@@ -135,7 +139,8 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
 
 
   openModal(template: TemplateRef<any>) {
-    this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
+    this.user = this.userForm.get('step.user.username').value;
+    this.modalRef = this.modalService.show(template, {class: 'modal-lg'});
   }
 
   decline(): void {

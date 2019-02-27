@@ -32,7 +32,7 @@
                        class="form-control"
                 >
                 <div class="input-group-addon">
-                  <a (click)="toggleShowPassword(pass)"><i [ngClass]="eyeClass()" aria-hidden="true"></i></a>
+                  <a style="cursor:pointer" (click)="toggleShowPassword(pass)"><i [ngClass]="eyeClass()" aria-hidden="true"></i></a>
                 </div>
               </div>
               <span class="help-block" *ngIf="null != userForm.get('step.user.password').errors &&
