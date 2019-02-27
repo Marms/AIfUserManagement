@@ -18,7 +18,7 @@ import { GroupCreateComponent } from './components/group-create/group-create.com
 import {LoggerService} from './services/logger.service';
 import { LogsComponent } from './components/logs/logs.component';
 import { MessageComponent } from './components/shared/message/message.component';
-
+import {BsModalService, ModalModule} from 'ngx-bootstrap/modal';
 @NgModule({
   declarations: [
     AppComponent,
@@ -36,9 +36,10 @@ import { MessageComponent } from './components/shared/message/message.component'
     ReactiveFormsModule,
     BrowserModule,
     HttpModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ModalModule.forRoot()
   ],
-  providers: [UserManagementService, AifmcService, LoaderService, LoggerService],
+  providers: [UserManagementService, AifmcService, LoaderService, LoggerService, BsModalService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

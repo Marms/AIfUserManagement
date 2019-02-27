@@ -1,10 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
-import {UserManagementService} from './services/user-management.service';
 import {AifmcService} from './services/aifmc.service';
-import {AbstractControl} from '@angular/forms/src/model';
 import {Subscription} from 'rxjs/Subscription';
 import {LoaderService} from './services/loader.service';
+import { setTheme } from 'ngx-bootstrap/utils';
 
 @Component({
   selector: 'app-root',
@@ -18,6 +16,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(private aifSvc: AifmcService
     , private loaderSvc: LoaderService) {
+    setTheme('bs4');
   }
 
   ngOnInit() {

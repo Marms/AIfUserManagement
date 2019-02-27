@@ -1,13 +1,13 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Form, FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+import {Component, OnDestroy, OnInit, TemplateRef} from '@angular/core';
+import { FormGroup} from '@angular/forms';
 import {UserManagementService} from '../../services/user-management.service';
-import {AbstractControl} from '@angular/forms/src/model';
 import {AifmcService} from '../../services/aifmc.service';
 import {UserItem} from '../../services/shared/userItem';
 import {Subscription} from 'rxjs';
 import {FormFactoryService} from '../../services/form-factory.service';
 import {LoggerService} from '../../services/logger.service';
 import {Utils} from '../shared/utils';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-user-update-password',
@@ -33,9 +33,15 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
   showPassword: boolean = false;
   showPleaseSelectOption: boolean;
 
+  modalRef: BsModalRef;
+
+
   constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService
-    , private formFactory: FormFactoryService, private  loggerSvc: LoggerService) {
+    , private formFactory: FormFactoryService, private  loggerSvc: LoggerService,
+              private modalService: BsModalService) {
   }
+
+
 
   ngOnInit() {
     this.initForm();
@@ -62,6 +68,7 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
 
     this.siteChanged = this.aifSvc.siteSubject.subscribe(
       (site: string) => {
+        this.site = site;
         this.initForm();
         this.showForm = true;
         this.showPleaseSelectOption = false;
@@ -96,7 +103,6 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    console.log(this.userForm.value);
     this.userSvc.saveUser(this.userForm.value);
     this.initVar();
   }
@@ -126,4 +132,14 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
     }
     return false;
   }
+
+
+  openModal(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
+  }
+
+  decline(): void {
+    this.modalRef.hide();
+  }
 }
+// http://valor-software.com/ngx-bootstrap/#/modals
