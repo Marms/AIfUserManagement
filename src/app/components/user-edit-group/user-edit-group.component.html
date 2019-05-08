@@ -17,10 +17,6 @@
             </select>
           </div>
         </div>
-        <div class="form-row-align-center">
-          <button [disabled]="!userForm.valid" type="submit" class="btn btn-primary">Update User group</button>
-        </div>
-
         <ng-template [ngIf]="showGroupHeader">
 
         <div class="form-row">
@@ -56,6 +52,9 @@
           </div>
         </div>
         </ng-template>
+        <div class="form-row-align-center">
+          <button [disabled]="disableButton" type="submit" class="btn btn-primary">Update User group</button>
+        </div>
       </div>
       </ng-template>
     </div>

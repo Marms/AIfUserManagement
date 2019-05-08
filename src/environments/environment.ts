@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  aifmcUrl: 'http://localhost:8080',
-  afsUserManagerUrl: 'http://localhost:8080',
+  aifmcUrl: 'http://localhost:8081',
+  afsUserManagerUrl: 'http://localhost:8081',
   currentUser: '"florent.delmotte.ineat"'
 };
 

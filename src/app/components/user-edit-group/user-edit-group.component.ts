@@ -29,6 +29,7 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   showForm: boolean;
   disableUserOption: boolean;
   showGroupHeader: boolean;
+  disableButton: boolean;
 
   ownerChanged: Subscription;
   repoChanged: Subscription;
@@ -107,6 +108,7 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   }
 
   initVar() {
+    this.disableButton = true;
     this.showForm = false;
     this.selectedGroup = '_DONT_ADD_';
     this.showGroupHeader = false;
@@ -119,10 +121,9 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
 
   userSelected(username: string) {
     this.showGroupHeader = true;
-
     this.resetSelectGroup();
     this.disableUserOption = true;
-
+    this.disableButton = true;
     this.removeAllGroup();
     this.addAllMemberShipToGroups(username);
   }
@@ -192,6 +193,7 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
 
   addOneGroup() {
     if (this.selectedGroup !== '_DONT_ADD_') {
+      this.disableButton = false;
       const array: FormArray = (<FormArray>this.userForm.get('step.user.groups'));
       array.push(new FormControl(this.selectedGroup, Validators.required));
       this.selectedUser.membership.push(this.selectedGroup);
@@ -208,6 +210,7 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   }
 
   addOneDeletedGroup(index: number) {
+    this.disableButton = false;
     const array: FormArray = (<FormArray>this.userForm.get('step.user.groups'));
     const deletedArray: FormArray = (<FormArray>this.userForm.get('step.user.deletedGroups'));
     deletedArray.push(array.controls[index]);

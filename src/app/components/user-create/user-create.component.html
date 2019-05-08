@@ -19,7 +19,8 @@
                     *ngIf="showError('step.user.username','maxLength')">Max length authorized: 20</span>
               <span class="help-block" *ngIf="showError('step.user.username','required')">Field required</span>
               <span class="help-block"
-                    *ngIf="showError('step.user.username','whitespace')">White space not allowed</span>
+                    *ngIf="showError('step.user.username','whitespace')">Letters <b>;"'=^</b> or white space are not allowed</span>
+
 
             </div>
           </div>
@@ -38,7 +39,7 @@
               <span class="help-block" *ngIf="null != userForm.get('step.user.password').errors &&
             showError('step.user.password', 'required')">Field required</span>
               <span class="help-block"
-                    *ngIf="showError('step.user.password','whitespace')">White space not allowed</span>
+                    *ngIf="showError('step.user.password','whitespace')">Letters <b>;"'=^</b> or white space are not allowed</span>
 
             </div>
           </div>

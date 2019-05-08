@@ -102,8 +102,8 @@ export class FormFactoryService {
 
 
   //  Validators.pattern('/^[a-zA-Z]+$/')]]
-  whitespace(control: FormControl) {
-    if ((null !== control.value) && (control.value.toString().match('.*[\' \'].*'))) {
+  whitespace(control: FormControl) {// ;"'=^
+    if ((null !== control.value) && (control.value.toString().match('.*[\' \'|\';\'|\'"\'|\'\'\'|\'^\'|\'=\'].*'))) {
       return {'whitespace': true};
     }
     return null;
