@@ -4,7 +4,6 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {UserManagementService} from './services/user-management.service';
-import {HttpModule} from '@angular/http';
 import {AifmcService} from './services/aifmc.service';
 import { UserEditGroupComponent } from './components/user-edit-group/user-edit-group.component';
 import { UserCreateComponent } from './components/user-create/user-create.component';
@@ -19,6 +18,7 @@ import {LoggerService} from './services/logger.service';
 import { LogsComponent } from './components/logs/logs.component';
 import { MessageComponent } from './components/shared/message/message.component';
 import {BsModalService, ModalModule} from 'ngx-bootstrap/modal';
+import {HttpClientModule} from '@angular/common/http';
 @NgModule({
   declarations: [
     AppComponent,
@@ -35,7 +35,7 @@ import {BsModalService, ModalModule} from 'ngx-bootstrap/modal';
   imports: [
     ReactiveFormsModule,
     BrowserModule,
-    HttpModule,
+    HttpClientModule,
     AppRoutingModule,
     ModalModule.forRoot()
   ],

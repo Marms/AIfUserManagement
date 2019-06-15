@@ -14,24 +14,13 @@ export class AppComponent implements OnInit, OnDestroy {
   loaderSubscription: Subscription;
   showLoader;
 
-  constructor(private aifSvc: AifmcService
-    , private loaderSvc: LoaderService) {
+  constructor() {
     setTheme('bs4');
   }
 
   ngOnInit() {
     this.owners = [];
     this.showLoader = false;
-
-    this.aifSvc.getOwners()
-      .subscribe((data: any) => {
-        this.owners = data.owners;
-      });
-    this.loaderSubscription = this.loaderSvc.status.subscribe(
-      (val: boolean) => {
-        this.showLoader = val;
-      }
-    );
   }
 
   ngOnDestroy() {

@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers, Response} from '@angular/http';
 import {Subject} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {LoaderService} from './loader.service';
 import {LoggerService} from './logger.service';
 import {Result} from './shared/result';
+import {HttpClient} from '@angular/common/http';
+import {UserItem} from './shared/userItem';
 
 @Injectable({
   providedIn: 'root'
@@ -13,41 +14,47 @@ export class UserManagementService {
   url: string;
   stepSubmited = new Subject();
 
-  constructor(private http: Http, private loaderSvc: LoaderService, private loggerSvc: LoggerService) {
+  constructor(private httpClient: HttpClient, private loaderSvc: LoaderService, private loggerSvc: LoggerService) {
     this.url = environment.afsUserManagerUrl + '/rest/AFSUserManager/v1/';
   }
 
   header = new Headers({'Content-Type': 'application/json'});
 
   saveGroup(step: any) {
-    console.log(step);
     this.loaderSvc.display(true);
-    this.http.post(this.url + 'groups', step, {headers: this.header})
-      .subscribe((response: Response) => {
+    this.httpClient.post<{ results: Result[] }>(this.url + 'groups', step, {responseType: 'json', observe: 'body'})
+      .subscribe((res) => {
+        console.log(res.results);
         this.stepSubmited.next();
-        this.manageResult(response.json().results)
+        this.manageResult(res.results);
         this.loaderSvc.display(false);
       }, error1 => this.handleError(error1));
   }
 
+
   saveUser(step: any) {
     console.log(step);
     this.loaderSvc.display(true);
-    this.http.post(this.url + 'user', step, {headers: this.header})
-      .subscribe((response: Response) => {
+    this.httpClient.post<{ results: Result[] }>(this.url + 'user', step, {responseType: 'json', observe: 'body'})
+      .subscribe((res) => {
         this.stepSubmited.next();
-        this.manageResult(response.json().results)
+        this.manageResult(res.results);
         this.loaderSvc.display(false);
       }, error1 => this.handleError(error1));
   }
 
   getUser(repos: string, site: string) {
     this.loaderSvc.display(true);
-    return this.http.get(this.url + 'user?repo=' + repos + '&site=' + site, {headers: this.header})
-      .map((response: Response) => {
+    return this.httpClient.get<{ users: UserItem[] }>(
+      this.url + 'user?repo=' + repos + '&site=' + site,
+      {
+        responseType: 'json',
+        observe: 'body'
+      })
+      .map((res) => {
         this.loggerSvc.sendOKmessage('');
         this.loaderSvc.display(false);
-        const data = response.json();
+        const data = res;
         data.users = data.users.map(u => {
           if (u.membership === undefined) {
             u.membership = [];
@@ -66,17 +73,21 @@ export class UserManagementService {
 
   getGroups(repos: string, site: string) {
     this.loaderSvc.display(true);
-    return this.http.get(this.url + 'groups?repo=' + repos + '&site=' + site, {headers: this.header})
-      .map((response: Response) => {
+    return this.httpClient.get<{ groups: String[] }>(
+      this.url + 'groups?repo=' + repos + '&site=' + site,
+      {
+        responseType: 'json',
+        observe: 'body'
+      })
+      .map((res) => {
         this.loggerSvc.sendOKmessage('');
-        if (response.status < 200 || response.status >= 300) {
-          this.loaderSvc.display(false);
-          this.handleError(new Error('This request has failed ' + response.status));
-        }
-        const data = response.json();
         this.loaderSvc.display(false);
-        return data;
-      });
+        return res;
+      })
+      /*.catch((res: any) => {
+        this.handleError(new Error('This request has failed '));
+
+      })*/;
   }
 
   /**
@@ -84,26 +95,29 @@ export class UserManagementService {
    */
   getLogs() {
     this.loaderSvc.display(true);
-    return this.http.get(this.url + 'logs', {headers: this.header})
-      .map((response: Response) => {
+    return this.httpClient.get<{ logs: string[] }>(
+      this.url + 'logs',
+      {responseType: 'json', observe: 'body'})
+      .map((res) => {
         this.loggerSvc.sendOKmessage('');
-        if (response.status < 200 || response.status >= 300) {
-          this.loaderSvc.display(false);
-          this.handleError(new Error('This request has failed ' + response.status));
-        }
-        const data = response.json();
         this.loaderSvc.display(false);
-        return data.logs;
-      });
+        return res.logs;
+      })
+      /*.catch(err => {
+        this.handleError(new Error('This request has failed ' + response.status));
+
+      })*/;
   }
 
   manageResult(results: Result[]) {
+    console.log(results);
     if (this.isAllStateOK(results)) {
       this.loggerSvc.sendOKmessage('OK');
       return;
     }
     this.loggerSvc.sendErrorMessage('please check LOG');
   }
+
   isAllStateOK(results: Result[]) {
     results = results.filter(r => r.status === 'KO');
     if (null === results || 0 === results.length) {
