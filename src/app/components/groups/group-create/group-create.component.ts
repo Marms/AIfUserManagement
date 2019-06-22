@@ -1,10 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AifmcService} from '../../services/aifmc.service';
-import {UserManagementService} from '../../services/user-management.service';
+import {AifmcService} from '../../../shared/aifmc.service';
+import {UserManagementService} from '../../../shared/user-management.service';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {FormFactoryService} from '../../services/form-factory.service';
+import {FormFactoryService} from '../../../shared/form-factory.service';
 import {Subscription} from 'rxjs';
-import {Utils} from '../shared/utils';
+import {Utils} from '../../../shared/utils';
 
 @Component({
   selector: 'app-group-create',

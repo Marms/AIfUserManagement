@@ -1,35 +1,21 @@
-import {RouterModule, Routes} from '@angular/router';
+import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
 import {NgModule} from '@angular/core';
-import {BaseComponent} from './components/base.component';
-import {UserCreateComponent} from './components/user-create/user-create.component';
-import {UserEditGroupComponent} from './components/user-edit-group/user-edit-group.component';
-import {UserUpdatePasswordComponent} from './components/user-update-password/user-update-password.component';
-import {GroupCreateComponent} from './components/group-create/group-create.component';
+import {BaseComponent} from './core/home/base.component';
+import {UserCreateComponent} from './components/users/user-create/user-create.component';
+import {UserEditGroupComponent} from './components/users/user-edit-group/user-edit-group.component';
+import {UserUpdatePasswordComponent} from './components/users/user-update-password/user-update-password.component';
+import {GroupCreateComponent} from './components/groups/group-create/group-create.component';
 import {LogsComponent} from './components/logs/logs.component';
 
 const routes: Routes = [
-  {
-    path: 'group', component: GroupCreateComponent
-  },
-  {
-    path: 'user', component: BaseComponent, children: [
-      {path: 'user-create', component: UserCreateComponent},
-      {path: 'user-edit-group', component: UserEditGroupComponent},
-      {path: 'user-update-password', component: UserUpdatePasswordComponent},
-      {path: '**', component: BaseComponent}
-    ]
-  },
-  {path: 'logs', component: LogsComponent},
-  {path: '**', component: BaseComponent}
-];
+  { path: 'home', component: BaseComponent}
+  ];
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes)
+    RouterModule.forRoot(routes, {preloadingStrategy: PreloadAllModules})
   ],
   exports: [RouterModule]
 })
 export class AppRoutingModule {
-
-
 }

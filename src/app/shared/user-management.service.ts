@@ -3,9 +3,9 @@ import {Subject} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {LoaderService} from './loader.service';
 import {LoggerService} from './logger.service';
-import {Result} from './shared/result';
+import {Result} from './pojo/result';
 import {HttpClient} from '@angular/common/http';
-import {UserItem} from './shared/userItem';
+import {UserItem} from './pojo/userItem';
 
 @Injectable({
   providedIn: 'root'

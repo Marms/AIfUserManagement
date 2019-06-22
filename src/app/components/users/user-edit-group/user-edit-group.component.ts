@@ -1,14 +1,14 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
-import {UserManagementService} from '../../services/user-management.service';
+import {UserManagementService} from '../../../shared/user-management.service';
 import {AbstractControl} from '@angular/forms/src/model';
-import {AifmcService} from '../../services/aifmc.service';
-import {UserItem} from '../../services/shared/userItem';
+import {AifmcService} from '../../../shared/aifmc.service';
+import {UserItem} from '../../../shared/pojo/userItem';
 import {Subscription} from 'rxjs';
-import {FormFactoryService} from '../../services/form-factory.service';
-import {LoggerService} from '../../services/logger.service';
-import {Step} from '../../services/shared/step';
-import {Utils} from '../shared/utils';
+import {FormFactoryService} from '../../../shared/form-factory.service';
+import {LoggerService} from '../../../shared/logger.service';
+import {Step} from '../../../shared/pojo/step';
+import {Utils} from '../../../shared/utils';
 
 @Component({
   selector: 'app-user-edit-group',

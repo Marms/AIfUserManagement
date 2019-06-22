@@ -1,8 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AifmcService} from '../../../services/aifmc.service';
+import {AifmcService} from '../aifmc.service';
 import {Subscription} from 'rxjs';
-import {UserManagementService} from '../../../services/user-management.service';
-import {LoggerService} from '../../../services/logger.service';
+import {UserManagementService} from '../user-management.service';
+import {LoggerService} from '../logger.service';
 
 @Component({
   selector: 'app-aifmc-header',

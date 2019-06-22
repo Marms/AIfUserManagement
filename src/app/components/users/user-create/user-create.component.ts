@@ -1,11 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
-import {UserManagementService} from '../../services/user-management.service';
-import {AifmcService} from '../../services/aifmc.service';
+import {UserManagementService} from '../../../shared/user-management.service';
+import {AifmcService} from '../../../shared/aifmc.service';
 import {Subscription} from 'rxjs/Subscription';
-import {AifmcHeaderComponent} from '../shared/form-header/aifmc-header.component';
-import {FormFactoryService} from '../../services/form-factory.service';
-import {Utils} from '../shared/utils';
+import {AifmcHeaderComponent} from '../../../shared/form-header/aifmc-header.component';
+import {FormFactoryService} from '../../../shared/form-factory.service';
+import {Utils} from '../../../shared/utils';
 
 @Component({
   selector: 'app-user-create',

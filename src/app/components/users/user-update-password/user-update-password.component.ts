@@ -1,12 +1,12 @@
 import {Component, OnDestroy, OnInit, TemplateRef} from '@angular/core';
 import { FormGroup} from '@angular/forms';
-import {UserManagementService} from '../../services/user-management.service';
-import {AifmcService} from '../../services/aifmc.service';
-import {UserItem} from '../../services/shared/userItem';
+import {UserManagementService} from '../../../shared/user-management.service';
+import {AifmcService} from '../../../shared/aifmc.service';
+import {UserItem} from '../../../shared/pojo/userItem';
 import {Subscription} from 'rxjs';
-import {FormFactoryService} from '../../services/form-factory.service';
-import {LoggerService} from '../../services/logger.service';
-import {Utils} from '../shared/utils';
+import {FormFactoryService} from '../../../shared/form-factory.service';
+import {LoggerService} from '../../../shared/logger.service';
+import {Utils} from '../../../shared/utils';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({

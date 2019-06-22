@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {UserManagementService} from '../../services/user-management.service';
+import {UserManagementService} from '../../shared/user-management.service';
 
 @Component({
   selector: 'app-logs',

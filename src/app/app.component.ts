@@ -1,7 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AifmcService} from './services/aifmc.service';
 import {Subscription} from 'rxjs/Subscription';
-import {LoaderService} from './services/loader.service';
 import { setTheme } from 'ngx-bootstrap/utils';
 
 @Component({
