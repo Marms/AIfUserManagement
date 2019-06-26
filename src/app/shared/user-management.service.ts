@@ -6,6 +6,7 @@ import {LoggerService} from './logger.service';
 import {Result} from './pojo/result';
 import {HttpClient} from '@angular/common/http';
 import {UserItem} from './pojo/userItem';
+import {map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -50,8 +51,8 @@ export class UserManagementService {
       {
         responseType: 'json',
         observe: 'body'
-      })
-      .map((res) => {
+      }).pipe(
+      map((res) => {
         this.loggerSvc.sendOKmessage('');
         this.loaderSvc.display(false);
         const data = res;
@@ -62,7 +63,8 @@ export class UserManagementService {
           return u;
         });
         return data;
-      });
+      })
+    );
   }
 
   handleError(error) {
@@ -78,12 +80,13 @@ export class UserManagementService {
       {
         responseType: 'json',
         observe: 'body'
-      })
-      .map((res) => {
+      }).pipe(
+      map((res) => {
         this.loggerSvc.sendOKmessage('');
         this.loaderSvc.display(false);
         return res;
       })
+    )
       /*.catch((res: any) => {
         this.handleError(new Error('This request has failed '));
 
@@ -98,11 +101,12 @@ export class UserManagementService {
     return this.httpClient.get<{ logs: string[] }>(
       this.url + 'logs',
       {responseType: 'json', observe: 'body'})
-      .map((res) => {
-        this.loggerSvc.sendOKmessage('');
-        this.loaderSvc.display(false);
-        return res.logs;
-      })
+      .pipe(
+        map((res) => {
+          this.loggerSvc.sendOKmessage('');
+          this.loaderSvc.display(false);
+          return res.logs;
+        }))
       /*.catch(err => {
         this.handleError(new Error('This request has failed ' + response.status));
 

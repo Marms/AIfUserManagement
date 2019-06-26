@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 import {UserManagementService} from '../../../shared/user-management.service';
 import {AifmcService} from '../../../shared/aifmc.service';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 import {AifmcHeaderComponent} from '../../../shared/form-header/aifmc-header.component';
 import {FormFactoryService} from '../../../shared/form-factory.service';
 import {Utils} from '../../../shared/utils';
@@ -13,15 +13,14 @@ import {Utils} from '../../../shared/utils';
   styleUrls: ['./user-create.component.css']
 })
 export class UserCreateComponent implements OnInit, OnDestroy {
-aui
   userForm: FormGroup;
   repo: string;
   owner: string;
   ownerChanged: Subscription;
   repoChanged: Subscription;
   siteChanged: Subscription;
-  showPassword: boolean = false;
-  showForm: boolean = false;
+  showPassword = false;
+  showForm = false;
 
   constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService,
               private formFactory: FormFactoryService) {
@@ -48,7 +47,7 @@ aui
       (s: string) => {
         this.repo = s;
         this.initForm();
-        Utils.setRepo(this.userForm,this.owner,this.repo);
+        Utils.setRepo(this.userForm, this.owner, this.repo);
 
       });
 

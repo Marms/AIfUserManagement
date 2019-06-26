@@ -1,5 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subscription} from 'rxjs/Subscription';
+import {Component, OnInit} from '@angular/core';
 import { setTheme } from 'ngx-bootstrap/utils';
 
 @Component({
@@ -7,9 +6,8 @@ import { setTheme } from 'ngx-bootstrap/utils';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit {
   owners: string[];
-  loaderSubscription: Subscription;
   showLoader;
 
   constructor() {
@@ -20,10 +18,5 @@ export class AppComponent implements OnInit, OnDestroy {
     this.owners = [];
     this.showLoader = false;
   }
-
-  ngOnDestroy() {
-    this.loaderSubscription.unsubscribe();
-  }
-
 
 }

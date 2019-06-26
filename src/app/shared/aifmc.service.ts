@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
-import 'rxjs/Rx';
 import {environment} from '../../environments/environment';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 import {LoaderService} from './loader.service';
 import {LoggerService} from './logger.service';
 import {HttpClient} from '@angular/common/http';
+import {map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +16,7 @@ export class AifmcService {
   repoSubject: Subject<string> = new Subject<string>();
   siteSubject: Subject<string> = new Subject<string>();
 
-  constructor( private httpClient: HttpClient, private loaderSvc: LoaderService, private loggerSvc: LoggerService) {
+  constructor(private httpClient: HttpClient, private loaderSvc: LoaderService, private loggerSvc: LoggerService) {
     this.url = environment.aifmcUrl + '/rest/aifra/api/v1/';
   }
 
@@ -33,9 +33,10 @@ export class AifmcService {
   getOwners() {
     this.loaderSvc.display(true);
     return this.httpClient.get<{ owners: string[] }>(this.url + 'owners', {observe: 'body', responseType: 'json'})
-      .map((re) => {
+      .pipe(
+      map((re) => {
         return re;
-      });
+      }));
   }
 
 
@@ -51,22 +52,23 @@ export class AifmcService {
       observe: 'body',
       responseType: 'json'
     })
-      .map((res) => {
+      .pipe(map((res) => {
         this.loaderSvc.display(false);
         this.loggerSvc.sendOKmessage('');
         return res;
-      });
+      }));
   }
 
 
   getSites(owner: string, repo: string) {
     this.loaderSvc.display(true);
     return this.httpClient.get(this.url + 'owners/' + owner + '/repos/' + repo + '/sites', {observe: 'body', responseType: 'json'})
-      .map((response) => {
-        this.loaderSvc.display(false);
-        this.loggerSvc.sendOKmessage('');
-        return response;
-      });
+      .pipe(
+        map((response) => {
+          this.loaderSvc.display(false);
+          this.loggerSvc.sendOKmessage('');
+          return response;
+        }));
   }
 
 }
