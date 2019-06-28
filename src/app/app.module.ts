@@ -10,6 +10,8 @@ import {UsersModules} from './components/users/users.modules';
 import {GroupsModule} from './components/groups/groups.module';
 import {SharedsModule} from './shared/shareds.module';
 import {LogsModules} from './components/logs/logs.modules';
+import {StoreModule} from '@ngrx/store';
+import {reducers} from './store/app.reducer';
 
 @NgModule({
   declarations: [
@@ -24,9 +26,10 @@ import {LogsModules} from './components/logs/logs.modules';
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
-    ModalModule.forRoot()
+    ModalModule.forRoot(),
+    StoreModule.forRoot(reducers)
   ],
-  providers: [ BsModalService],
+  providers: [BsModalService],
   bootstrap: [AppComponent]
 })
 export class AppModule {
