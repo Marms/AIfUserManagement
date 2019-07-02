@@ -12,6 +12,8 @@ import {SharedsModule} from './shared/shareds.module';
 import {LogsModules} from './components/logs/logs.modules';
 import {StoreModule} from '@ngrx/store';
 import {reducers} from './store/app.reducer';
+import {AifmcHeaderEffect} from './shared/form-header/store/aifmc-header.effect';
+import {EffectsModule} from '@ngrx/effects';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,9 @@ import {reducers} from './store/app.reducer';
     HttpClientModule,
     AppRoutingModule,
     ModalModule.forRoot(),
-    StoreModule.forRoot(reducers)
+    StoreModule.forRoot(reducers),
+    EffectsModule.forRoot([AifmcHeaderEffect]),
+
   ],
   providers: [BsModalService],
   bootstrap: [AppComponent]

@@ -1,13 +1,12 @@
 import {Component, OnDestroy, OnInit, TemplateRef} from '@angular/core';
-import { FormGroup} from '@angular/forms';
+import {FormGroup} from '@angular/forms';
 import {UserManagementService} from '../../../shared/user-management.service';
-import {AifmcService} from '../../../shared/aifmc.service';
 import {UserItem} from '../../../shared/pojo/userItem';
 import {Subscription} from 'rxjs';
 import {FormFactoryService} from '../../../shared/form-factory.service';
 import {LoggerService} from '../../../shared/logger.service';
 import {Utils} from '../../../shared/utils';
-import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import {BsModalService, BsModalRef} from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-user-update-password',
@@ -37,11 +36,10 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
   modalRef: BsModalRef;
 
 
-  constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService
+  constructor(private  userSvc: UserManagementService
     , private formFactory: FormFactoryService, private  loggerSvc: LoggerService,
               private modalService: BsModalService) {
   }
-
 
 
   ngOnInit() {
@@ -53,7 +51,7 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.ownerChanged = this.aifSvc.ownerSubject.subscribe(
+   /* this.ownerChanged = this.aifSvc.ownerSubject.subscribe(
       (owner: string) => {
         this.initForm();
         this.owner = owner;
@@ -82,6 +80,7 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
           error1 => this.userSvc.handleError(error1)
         );
       });
+    */
   }
 
   ngOnDestroy() {
@@ -147,4 +146,5 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
     this.modalRef.hide();
   }
 }
+
 // http://valor-software.com/ngx-bootstrap/#/modals

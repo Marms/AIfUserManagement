@@ -2,7 +2,6 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 import {UserManagementService} from '../../../shared/user-management.service';
 import {AbstractControl} from '@angular/forms/src/model';
-import {AifmcService} from '../../../shared/aifmc.service';
 import {UserItem} from '../../../shared/pojo/userItem';
 import {Subscription} from 'rxjs';
 import {FormFactoryService} from '../../../shared/form-factory.service';
@@ -37,7 +36,6 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   stepSubmited: Subscription;
 
   constructor(private  userSvc: UserManagementService,
-              private aifSvc: AifmcService,
               private formFactory: FormFactoryService,
               private loggerSvc: LoggerService) {
   }
@@ -54,6 +52,7 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
     this.initForm();
     this.initVar();
 
+    /*
     this.ownerChanged = this.aifSvc.ownerSubject.subscribe(
       (s: string) => {
         this.initForm();
@@ -94,9 +93,8 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
           },
           error1 => this.userSvc.handleError(error1)
         );
-
       });
-
+      */
     this.stepSubmited = this.userSvc.stepSubmited.subscribe(() => {
       this.disableUserOption = false;
     });

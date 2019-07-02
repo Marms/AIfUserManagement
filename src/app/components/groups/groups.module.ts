@@ -3,7 +3,6 @@ import {GroupCreateComponent} from './group-create/group-create.component';
 import {CommonModule} from '@angular/common';
 import {ReactiveFormsModule} from '@angular/forms';
 import {UserManagementService} from '../../shared/user-management.service';
-import {AifmcService} from '../../shared/aifmc.service';
 import {FormFactoryService} from '../../shared/form-factory.service';
 import {SharedsModule} from '../../shared/shareds.module';
 import {GroupsRoutingModule} from './groups-routing.module';
@@ -20,7 +19,7 @@ import {GroupsRoutingModule} from './groups-routing.module';
   ],
   exports: [],
   providers: [
-    UserManagementService, AifmcService, FormFactoryService
+    UserManagementService, FormFactoryService
   ]
 })
 export class GroupsModule {

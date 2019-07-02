@@ -1,12 +1,15 @@
 import {Action} from '@ngrx/store';
 
+export const GET_OWNERS = 'GET_OWNER';
 export const SELECT_OWNER = 'SELECT_OWNER';
 export const RESET_OWNER = 'RESET_OWNER';
 export const SET_OWNERS = 'SET_OWNERS';
 
+export const GET_REPOS = 'GET_REPOS';
 export const SET_REPOS = 'SET_REPOS';
 export const SELECT_REPO = 'SELECT_REPO';
 
+export const GET_SITES = 'GET_SITES';
 export const SET_SITES = 'SET_SITES';
 export const SELECT_SITE = 'SELECT_SITE';
 
@@ -57,5 +60,30 @@ export class SelectSite implements Action {
   }
 }
 
+export class GetOwners implements Action {
+  readonly type = GET_OWNERS;
+}
 
-export type AifmcHeaderActions = SetOwners | SelectOwner | ResetOwner | SetRepos | SelectRepo | SetSites | SelectSite ;
+export class GetRepos implements Action {
+  readonly type = GET_REPOS;
+
+  constructor(public payload: { owner: string }) {
+  }
+}
+
+export class GetSites implements Action {
+  readonly type = GET_SITES;
+}
+
+
+export type AifmcHeaderActions =
+  SetOwners
+  | SelectOwner
+  | ResetOwner
+  | GetOwners
+  | SetRepos
+  | SelectRepo
+  | GetRepos
+  | SetSites
+  | SelectSite
+  | GetSites ;

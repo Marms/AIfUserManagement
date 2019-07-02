@@ -1,7 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AifmcService} from '../../../shared/aifmc.service';
 import {UserManagementService} from '../../../shared/user-management.service';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormGroup} from '@angular/forms';
 import {FormFactoryService} from '../../../shared/form-factory.service';
 import {Subscription} from 'rxjs';
 import {Utils} from '../../../shared/utils';
@@ -21,7 +20,7 @@ export class GroupCreateComponent implements OnInit, OnDestroy {
   owner: string;
   showForm: boolean = false;
 
-  constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService, private formFactory: FormFactoryService) {
+  constructor(private  userSvc: UserManagementService, private formFactory: FormFactoryService) {
   }
 
   ngOnDestroy() {
@@ -32,25 +31,27 @@ export class GroupCreateComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initForm();
-    this.ownerChanged = this.aifSvc.ownerSubject.subscribe(
-      (s: string) => {
-        this.initForm();
-        this.owner = s;
-        Utils.setOwner(this.form, this.owner);
-      }
-    );
-    this.repoChanged = this.aifSvc.repoSubject.subscribe(
-      (s: string) => {
-        this.repo = s;
-        Utils.setRepo(this.form, this.owner, this.repo);
-      });
+    /* this.ownerChanged = this.aifSvc.ownerSubject.subscribe(
+       (s: string) => {
+         this.initForm();
+         this.owner = s;
+         Utils.setOwner(this.form, this.owner);
+       }
+     );
+     this.repoChanged = this.aifSvc.repoSubject.subscribe(
+       (s: string) => {
+         this.repo = s;
+         Utils.setRepo(this.form, this.owner, this.repo);
+       });
 
-    this.siteChanged = this.aifSvc.siteSubject.subscribe(
-      (s: string) => {
-        this.initForm();
-        Utils.setSite(this.form, this.owner, this.repo, s);
-        this.showForm = true;
-      });
+     this.siteChanged = this.aifSvc.siteSubject.subscribe(
+       (s: string) => {
+         this.initForm();
+         Utils.setSite(this.form, this.owner, this.repo, s);
+         this.showForm = true;
+       });
+
+       */
   }
 
   initForm() {

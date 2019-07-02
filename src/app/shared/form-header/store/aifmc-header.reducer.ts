@@ -12,7 +12,7 @@ export interface State {
   repo: string;
   repos: string[];
   setRepo: boolean;
-  setRepos: false;
+  setRepos: boolean;
 
   site: string;
   sites: string[];
@@ -54,7 +54,7 @@ export function aifMcReducers(state = initialState, action) {
     case AifmcHeaderAction.SET_OWNERS:
       return {...state, owners: [...action.payload.owners]};
     case AifmcHeaderAction.RESET_OWNER:
-      return {...state, owners: [...state.owners], setOwner: false};
+      return {...state, owners: [...state.owners], setOwner: false, repos: [], sites: [], setRepos: false, setRepo: false, setSite: false};
 
     case AifmcHeaderAction.SET_REPOS:
       return {...state, repos: [...action.payload.repos], setRepos: true};

@@ -1,9 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 import {UserManagementService} from '../../../shared/user-management.service';
-import {AifmcService} from '../../../shared/aifmc.service';
 import {Subscription} from 'rxjs';
-import {AifmcHeaderComponent} from '../../../shared/form-header/aifmc-header.component';
 import {FormFactoryService} from '../../../shared/form-factory.service';
 import {Utils} from '../../../shared/utils';
 
@@ -22,7 +20,7 @@ export class UserCreateComponent implements OnInit, OnDestroy {
   showPassword = false;
   showForm = false;
 
-  constructor(private  userSvc: UserManagementService, private aifSvc: AifmcService,
+  constructor(private  userSvc: UserManagementService,
               private formFactory: FormFactoryService) {
   }
 
@@ -34,7 +32,7 @@ export class UserCreateComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initForm();
-
+    /*
     this.ownerChanged = this.aifSvc.ownerSubject.subscribe(
       (s: string) => {
         this.initForm();
@@ -57,7 +55,7 @@ export class UserCreateComponent implements OnInit, OnDestroy {
         Utils.setSite(this.userForm, this.owner, this.repo, s);
 
         this.showForm = true;
-      });
+      });*/
   }
 
   // creation du formulaire
