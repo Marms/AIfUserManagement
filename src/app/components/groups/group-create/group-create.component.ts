@@ -1,9 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {UserManagementService} from '../../../shared/user-management.service';
 import {FormGroup} from '@angular/forms';
 import {FormFactoryService} from '../../../shared/form-factory.service';
-import {Subscription} from 'rxjs';
+import { Subscription} from 'rxjs';
 import {Utils} from '../../../shared/utils';
+import {Store} from '@ngrx/store';
+import * as fromApp from '../../../store/app.reducer';
+import * as fromComponentAction from '../../store/components.actions';
 
 @Component({
   selector: 'app-group-create',
@@ -11,47 +13,26 @@ import {Utils} from '../../../shared/utils';
   styleUrls: ['./group-create.component.css']
 })
 export class GroupCreateComponent implements OnInit, OnDestroy {
-  ownerChanged: Subscription;
-  repoChanged: Subscription;
   siteChanged: Subscription;
 
   form: FormGroup;
-  repo: string;
-  owner: string;
-  showForm: boolean = false;
+  showForm = false;
 
-  constructor(private  userSvc: UserManagementService, private formFactory: FormFactoryService) {
+  constructor(private formFactory: FormFactoryService, private store: Store<fromApp.AppState>) {
   }
 
   ngOnDestroy() {
-    this.ownerChanged.unsubscribe();
-    this.repoChanged.unsubscribe();
     this.siteChanged.unsubscribe();
   }
 
   ngOnInit() {
     this.initForm();
-    /* this.ownerChanged = this.aifSvc.ownerSubject.subscribe(
-       (s: string) => {
-         this.initForm();
-         this.owner = s;
-         Utils.setOwner(this.form, this.owner);
-       }
-     );
-     this.repoChanged = this.aifSvc.repoSubject.subscribe(
-       (s: string) => {
-         this.repo = s;
-         Utils.setRepo(this.form, this.owner, this.repo);
-       });
-
-     this.siteChanged = this.aifSvc.siteSubject.subscribe(
-       (s: string) => {
-         this.initForm();
-         Utils.setSite(this.form, this.owner, this.repo, s);
-         this.showForm = true;
-       });
-
-       */
+    this.siteChanged = this.store.select('aifmcHeader').subscribe((action) => {
+      if (action.setSite) {
+        Utils.setSite(this.form, action.owner, action.repo, action.site);
+        this.showForm = true;
+      }
+    });
   }
 
   initForm() {
@@ -60,7 +41,7 @@ export class GroupCreateComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    this.userSvc.saveGroup(this.form.value);
+    this.store.dispatch(new fromComponentAction.SaveGroup(this.form.value));
     this.initForm();
 
   }

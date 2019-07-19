@@ -3,11 +3,20 @@ import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 import {UserManagementService} from '../../../shared/user-management.service';
 import {AbstractControl} from '@angular/forms/src/model';
 import {UserItem} from '../../../shared/pojo/userItem';
-import {Subscription} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {FormFactoryService} from '../../../shared/form-factory.service';
 import {LoggerService} from '../../../shared/logger.service';
 import {Step} from '../../../shared/pojo/step';
 import {Utils} from '../../../shared/utils';
+import {Store} from '@ngrx/store';
+import * as fromApp from '../../../store/app.reducer';
+import * as fromComponentActions from '../../store/components.actions';
+import * as fromComponentReducer from '../../store/components.reducer';
+
+
+// supprimer uniquement des groupes ne permet pas de sauvegarder
+// en changeant le group on garde en mémoire les actions passée
+// les groupes ne sont pas mis dans le deletedGroup.
 
 @Component({
   selector: 'app-user-edit-group',
@@ -16,13 +25,9 @@ import {Utils} from '../../../shared/utils';
 export class UserEditGroupComponent implements OnInit, OnDestroy {
   userForm: FormGroup;
 
-  users: UserItem[];
-  groups: UserItem[];
+  componentState$: Observable<fromComponentReducer.State>;
   selectedUser: UserItem;
 
-  repo: string;
-  owner: string;
-  site: string;
   selectedGroup: string;
 
   showForm: boolean;
@@ -30,20 +35,18 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   showGroupHeader: boolean;
   disableButton: boolean;
 
-  ownerChanged: Subscription;
-  repoChanged: Subscription;
+  componentActions: Subscription;
+  selectUserAction: Subscription;
   siteChanged: Subscription;
-  stepSubmited: Subscription;
 
   constructor(private  userSvc: UserManagementService,
               private formFactory: FormFactoryService,
-              private loggerSvc: LoggerService) {
+              private loggerSvc: LoggerService,
+              private store: Store<fromApp.AppState>) {
   }
 
   ngOnDestroy() {
-    this.ownerChanged.unsubscribe();
-    this.repoChanged.unsubscribe();
-    this.stepSubmited.unsubscribe();
+    this.componentActions.unsubscribe();
     this.siteChanged.unsubscribe();
   }
 
@@ -52,52 +55,53 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
     this.initForm();
     this.initVar();
 
-    /*
-    this.ownerChanged = this.aifSvc.ownerSubject.subscribe(
-      (s: string) => {
-        this.initForm();
-        this.owner = s;
-        Utils.setOwner(this.userForm, this.owner);
+    this.siteChanged = this.store.select('aifmcHeader').subscribe(
+      (action) => {
+
+        if (action.setSite) {
+          Utils.setSite(this.userForm, action.owner, action.repo, action.site);
+          this.initForm();
+          this.store.dispatch(new fromComponentActions.GetUsers({header: {owner: action.owner, repo: action.repo, site: action.site}}));
+          this.store.dispatch(new fromComponentActions.GetGroups({header: {owner: action.owner, repo: action.repo, site: action.site}}));
+          this.disableUserOption = false;
+          this.showGroupHeader = false;
+
+        } else {
+          this.store.dispatch(new fromComponentActions.ResetUsers());
+        }
+        this.initVar();
+
       }
     );
 
-    this.repoChanged = this.aifSvc.repoSubject.subscribe(
-      (s: string) => {
-        this.repo = s;
-        this.initForm();
-        Utils.setRepo(this.userForm, this.owner, this.repo);
-      },
-    );
-
-    this.siteChanged = this.aifSvc.siteSubject.subscribe(
-      (s: string) => {
-        this.initForm();
-        this.showForm = true;
-        this.disableUserOption = false;
-        this.showGroupHeader = false;
-        this.site = s;
-        Utils.setSite(this.userForm, this.owner, this.repo, this.site);
-
-        this.userSvc.getUser(this.repo, s).subscribe(
-          (data: any) => {
-
-            this.users = data.users;
-            this.selectedUser = new UserItem();
-          },
-          error1 => this.userSvc.handleError(error1)
-        );
-
-        this.userSvc.getGroups(this.repo, s).subscribe(
-          (d: any) => {
-            this.groups = d.groups;
-          },
-          error1 => this.userSvc.handleError(error1)
-        );
-      });
-      */
-    this.stepSubmited = this.userSvc.stepSubmited.subscribe(() => {
-      this.disableUserOption = false;
+    this.selectUserAction = this.store.select('components').subscribe((action) => {
+      if ( action.actionName === fromComponentActions.SELECT_USER) {
+        this.selectedUser = action.user;
+        this.showGroupHeader = true;
+        this.resetSelectGroup();
+        this.disableUserOption = true;
+        this.disableButton = true;
+        this.removeAllGroup();
+        this.addAllMemberShipToGroups('');
+        this.addAllDeletedGroup(action.deletedGroup);
+      }
     });
+
+    this.componentActions = this.store.select('components').subscribe((action) => {
+      if (action.actionName === fromComponentActions.ADD_GROUP ||  action.actionName === fromComponentActions.REMOVE_GROUP) {
+        this.resetSelectGroup();
+        this.disableUserOption = true;
+        this.disableButton = false;
+        this.removeAllGroup();
+        // const nameArray = (action.actionName === fromComponentActions.ADD_GROUP) ? 'step.user.groups' : 'step.user.deletedGroups';
+        this.addAllMemberShipToGroups('');
+        this.addAllDeletedGroup(action.deletedGroup);
+      }
+    });
+
+
+    this.componentState$ = this.store.select('components');
+
   }
 
   initForm() {
@@ -118,36 +122,35 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   }
 
   userSelected(username: string) {
-    this.showGroupHeader = true;
-    this.resetSelectGroup();
-    this.disableUserOption = true;
-    this.disableButton = true;
-    this.removeAllGroup();
-    this.addAllMemberShipToGroups(username);
+    this.store.dispatch(new fromComponentActions.SelectUser({username: username}));
   }
 
   private addAllMemberShipToGroups(username: string) {
-    for (const user of this.users) {
-      if (username === user.name) {
-        this.selectedUser = user;
-        for (const group of user.membership) {
-          const control = new FormControl();
-          control.patchValue(group);
-          control.setValidators(Validators.required);
-          (<FormArray> this.userForm.get('step.user.groups')).push(control);
-        }
-      }
+    for (const group of this.selectedUser.membership) {
+      this.pushToArray(group, 'step.user.groups');
+    }
+  }
+  private addAllDeletedGroup(groups: string[]) {
+    for (const group of groups) {
+      this.pushToArray(group, 'step.user.deletedGroups');
     }
   }
 
+  private pushToArray(group, name) {
+    const control = new FormControl();
+    control.patchValue(group);
+    control.setValidators(Validators.required);
+    (<FormArray>this.userForm.get(name)).push(control);
+  }
+
   removeAllGroup() {
-    const array = <FormArray> this.userForm.get('step.user.groups');
+    const array = <FormArray>this.userForm.get('step.user.groups');
     if (!this.isNullArray(array)) {
       while (array.length !== 0) {
         array.removeAt(0);
       }
     }
-    const deletedArray = <FormArray> this.userForm.get('step.user.deletedGroups');
+    const deletedArray = <FormArray>this.userForm.get('step.user.deletedGroups');
     if (!this.isNullArray(deletedArray)) {
       while (deletedArray.length !== 0) {
         deletedArray.removeAt(0);
@@ -160,8 +163,9 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    const value = this.cleanDeletedGroup(this.userForm.value);
-    this.userSvc.saveUser(value);
+    this.store.dispatch(new fromComponentActions.ResetUsers());
+    this.store.dispatch(new fromComponentActions.ResetGroups());
+    this.store.dispatch(new fromComponentActions.SaveUser(this.userForm.value));
     this.initVar();
   }
 
@@ -186,25 +190,21 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
   }
 
   groupSelected(group: string) {
-    this.selectedGroup = group;
+    this.store.dispatch(new fromComponentActions.SelectGroup({groupname: group}));
+
   }
 
   addOneGroup() {
-    if (this.selectedGroup !== '_DONT_ADD_') {
-      this.disableButton = false;
-      const array: FormArray = (<FormArray>this.userForm.get('step.user.groups'));
-      array.push(new FormControl(this.selectedGroup, Validators.required));
-      this.selectedUser.membership.push(this.selectedGroup);
-      this.resetSelectGroup();
-    }
+    this.store.dispatch(new fromComponentActions.AddGroup());
+    this.disableButton = false;
+    this.resetSelectGroup();
   }
 
   resetSelectGroup() {
-    const selectElement: HTMLSelectElement = (<HTMLSelectElement> document.getElementById('selectGroup'));
+    const selectElement: HTMLSelectElement = (<HTMLSelectElement>document.getElementById('selectGroup'));
     if (null !== selectElement) {
       selectElement.selectedIndex = 0;
     }
-    this.selectedGroup = '_DONT_ADD_';
   }
 
   addOneDeletedGroup(index: number) {
@@ -212,20 +212,16 @@ export class UserEditGroupComponent implements OnInit, OnDestroy {
     const array: FormArray = (<FormArray>this.userForm.get('step.user.groups'));
     const deletedArray: FormArray = (<FormArray>this.userForm.get('step.user.deletedGroups'));
     deletedArray.push(array.controls[index]);
-
-    array.removeAt(index);
-    this.selectedUser.membership.splice(index, 1);
+    this.store.dispatch(new fromComponentActions.RemoveGroup({groupname: array.controls[index].value}));
   }
 
   /***
    * Ne pas afficher les groups déjà contenu dans l'utilisateur
    */
-  getFilteredGroup(): string[] {
-    const array2 = this.groups.filter(group => {
+  getFilteredGroup(groups: UserItem[]): string[] {
+    const array2 = groups.filter(group => {
       return undefined === this.selectedUser.membership.find(member => member === group.name);
     });
     return array2.map(item => item.name);
   }
-
-
 }

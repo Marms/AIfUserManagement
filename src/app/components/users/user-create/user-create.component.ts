@@ -1,9 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormGroup} from '@angular/forms';
 import {UserManagementService} from '../../../shared/user-management.service';
 import {Subscription} from 'rxjs';
 import {FormFactoryService} from '../../../shared/form-factory.service';
 import {Utils} from '../../../shared/utils';
+import {Store} from '@ngrx/store';
+import * as fromState from '../../../store/app.reducer';
+import * as fromComponentAction from '../../store/components.actions';
 
 @Component({
   selector: 'app-user-create',
@@ -12,50 +15,26 @@ import {Utils} from '../../../shared/utils';
 })
 export class UserCreateComponent implements OnInit, OnDestroy {
   userForm: FormGroup;
-  repo: string;
-  owner: string;
-  ownerChanged: Subscription;
-  repoChanged: Subscription;
-  siteChanged: Subscription;
+  headerState: Subscription;
   showPassword = false;
   showForm = false;
 
-  constructor(private  userSvc: UserManagementService,
-              private formFactory: FormFactoryService) {
+  constructor(private formFactory: FormFactoryService,
+              private store: Store<fromState.AppState>) {
   }
 
   ngOnDestroy() {
-    this.repoChanged.unsubscribe();
-    this.siteChanged.unsubscribe();
-    this.ownerChanged.unsubscribe();
+    this.headerState.unsubscribe();
   }
 
   ngOnInit() {
     this.initForm();
-    /*
-    this.ownerChanged = this.aifSvc.ownerSubject.subscribe(
-      (s: string) => {
-        this.initForm();
-        this.owner = s;
-        Utils.setOwner(this.userForm, this.owner);
-
-      }
-    );
-    this.repoChanged = this.aifSvc.repoSubject.subscribe(
-      (s: string) => {
-        this.repo = s;
-        this.initForm();
-        Utils.setRepo(this.userForm, this.owner, this.repo);
-
-      });
-
-    this.siteChanged = this.aifSvc.siteSubject.subscribe(
-      (s: string) => {
-        this.initForm();
-        Utils.setSite(this.userForm, this.owner, this.repo, s);
-
+    this.headerState = this.store.select('aifmcHeader').subscribe((action) => {
+      if (action.setSite) {
+        Utils.setSite(this.userForm, action.owner, action.repo, action.site);
         this.showForm = true;
-      });*/
+      }
+    });
   }
 
   // creation du formulaire
@@ -65,9 +44,8 @@ export class UserCreateComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    this.userSvc.saveUser(this.userForm.value);
-    this.userForm.reset();
-    this.showForm = false;
+    this.store.dispatch(new fromComponentAction.SaveUser(this.userForm.value));
+    this.initForm();
   }
 
   toggleShowPassword(pass: any) {

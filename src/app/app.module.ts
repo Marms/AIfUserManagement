@@ -14,6 +14,7 @@ import {StoreModule} from '@ngrx/store';
 import {reducers} from './store/app.reducer';
 import {AifmcHeaderEffect} from './shared/form-header/store/aifmc-header.effect';
 import {EffectsModule} from '@ngrx/effects';
+import {ComponentsEffects} from './components/store/components.effects';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,7 @@ import {EffectsModule} from '@ngrx/effects';
     AppRoutingModule,
     ModalModule.forRoot(),
     StoreModule.forRoot(reducers),
-    EffectsModule.forRoot([AifmcHeaderEffect]),
+    EffectsModule.forRoot([AifmcHeaderEffect, ComponentsEffects]),
 
   ],
   providers: [BsModalService],

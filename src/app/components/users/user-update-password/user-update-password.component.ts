@@ -2,11 +2,15 @@ import {Component, OnDestroy, OnInit, TemplateRef} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {UserManagementService} from '../../../shared/user-management.service';
 import {UserItem} from '../../../shared/pojo/userItem';
-import {Subscription} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {FormFactoryService} from '../../../shared/form-factory.service';
 import {LoggerService} from '../../../shared/logger.service';
 import {Utils} from '../../../shared/utils';
 import {BsModalService, BsModalRef} from 'ngx-bootstrap/modal';
+import {Store} from '@ngrx/store';
+import * as fromApp from '../../../store/app.reducer';
+import * as fromComponentAction from '../../store/components.actions';
+import * as fromComponentReducer from '../../store/components.reducer';
 
 @Component({
   selector: 'app-user-update-password',
@@ -16,79 +20,48 @@ import {BsModalService, BsModalRef} from 'ngx-bootstrap/modal';
 export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
 
   userForm: FormGroup;
-  users: UserItem[];
 
-  ownerChanged: Subscription;
-  repoChanged: Subscription;
-  siteChanged: Subscription;
-  stepSubmited: Subscription;
+  aifmcState: Subscription;
+  componentState: Observable<fromComponentReducer.State>;
 
-  site: string;
-  owner: string;
-  repo: string;
-  owners: string[];
   user: string;
 
   showForm: boolean;
-  showPassword: boolean = false;
+  showPassword = false;
   showPleaseSelectOption: boolean;
 
   modalRef: BsModalRef;
 
 
-  constructor(private  userSvc: UserManagementService
-    , private formFactory: FormFactoryService, private  loggerSvc: LoggerService,
-              private modalService: BsModalService) {
+  constructor(
+    private formFactory: FormFactoryService,
+    private  loggerSvc: LoggerService,
+    private store: Store<fromApp.AppState>,
+    private modalService: BsModalService) {
   }
 
 
   ngOnInit() {
     this.initForm();
-    this.stepSubmited = this.userSvc.stepSubmited.subscribe(
-      () => {
-        this.users = [];
-        this.showPleaseSelectOption = false;
-      }
-    );
 
-   /* this.ownerChanged = this.aifSvc.ownerSubject.subscribe(
-      (owner: string) => {
-        this.initForm();
-        this.owner = owner;
-        Utils.setOwner(this.userForm, this.owner);
-      }
-    );
-    this.repoChanged = this.aifSvc.repoSubject.subscribe(
-      (repo: string) => {
-        this.initForm();
-        this.repo = repo;
-        Utils.setRepo(this.userForm, this.owner, this.repo);
-      });
-
-    this.siteChanged = this.aifSvc.siteSubject.subscribe(
-      (site: string) => {
-        this.site = site;
-        this.initForm();
+    this.aifmcState = this.store.select('aifmcHeader').subscribe((action) => {
+      if (action.setSite) {
+        Utils.setSite(this.userForm, action.owner, action.repo, action.site);
         this.showForm = true;
-        this.showPleaseSelectOption = false;
-        Utils.setSite(this.userForm, this.owner, this.repo, site);
+        this.store.dispatch(new fromComponentAction.GetUsers({header: {owner: action.owner, repo: action.repo, site: action.site}}));
+      } else {
+        this.initVar();
+        this.store.dispatch(new fromComponentAction.ResetUsers());
+      }
+    });
 
-        this.userSvc.getUser(this.repo, site).subscribe(
-          (data: any) => {
-            this.users = data.users;
-          },
-          error1 => this.userSvc.handleError(error1)
-        );
-      });
-    */
+    this.componentState = this.store.select('components');
+
   }
 
   ngOnDestroy() {
-    this.repoChanged.unsubscribe();
-    this.siteChanged.unsubscribe();
-    this.ownerChanged.unsubscribe();
+    this.aifmcState.unsubscribe();
   }
-
 
   initForm() {
     this.showForm = false;
@@ -104,7 +77,7 @@ export class UserUpdatePasswordComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    this.userSvc.saveUser(this.userForm.value);
+    this.store.dispatch(new fromComponentAction.SaveUser(this.userForm.value));
     this.initVar();
     this.modalRef.hide();
 

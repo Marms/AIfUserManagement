@@ -36,8 +36,6 @@ const initialState: State = {
 };
 
 export function aifMcReducers(state = initialState, action) {
-  console.log(action.type);
-
   switch (action.type) {
     case AifmcHeaderAction.SELECT_OWNER:
       return {

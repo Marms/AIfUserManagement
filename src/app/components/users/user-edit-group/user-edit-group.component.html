@@ -4,7 +4,7 @@
       <div formGroupName="alias">
         <app-aifmc-header></app-aifmc-header>
       </div>
-      <ng-template [ngIf]="showForm">
+      <ng-template [ngIf]="(componentState$ | async).userSeted">
 
       <div formGroupName="user">
         <div class="form-group">
@@ -13,7 +13,7 @@
             <select class="form-control" id="username" formControlName="username"
                     (change)="userSelected($event.target.value)">
               <option *ngIf="!disableUserOption" selected value="">Please select</option>
-              <option *ngFor="let user of users" (value)="user.name">{{user.name}}</option>
+              <option *ngFor="let user of (componentState$ | async).users" (value)="user.name">{{user.name}}</option>
             </select>
           </div>
         </div>
@@ -28,7 +28,7 @@
           </div>
         </div>
         <div class="form-row" formArrayName="groups" formArrayName="groups"
-             *ngFor="let item of getGroups(); let i = index">
+             *ngFor="let item of getGroups() ; let i = index">
           <div class="form-group col-md-10" id="groups">
             <input type="text"
                    class="form-control"
@@ -44,7 +44,7 @@
             <select class="form-control" id="selectGroup" (change)="groupSelected($event.target.value)">
               <option selected name="select" value="_DONT_ADD_" class="form-control">
               </option>
-              <option *ngFor="let group of getFilteredGroup()" (value)="group">{{group}} </option>
+              <option *ngFor="let group of getFilteredGroup((componentState$ | async).groups) " (value)="group">{{group}} </option>
             </select>
           </div>
           <div class="form-group col-md-2">
